@@ -1,0 +1,15 @@
+CREATE TABLE station (
+    crs TEXT NOT NULL,
+    stationName TEXT NOT NULL
+);
+
+insertStation:
+INSERT INTO station(crs, stationName)
+VALUES (?, ?);
+
+removeAllStations:
+DELETE FROM station;
+
+selectAll:
+SELECT *
+FROM station;

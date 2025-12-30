@@ -1,0 +1,5 @@
+<resources>
+    <string name="station_fetch_error">Error fetching station list!</string>
+
+    <string name="station_search_placeholder">Search for station</string>
+</resources>
