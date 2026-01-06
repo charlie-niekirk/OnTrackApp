@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.androidLint)
     kotlin("plugin.compose")
     id("org.jetbrains.compose")
+    id("dev.zacsweers.metro")
 }
 
 kotlin {
@@ -70,6 +71,9 @@ kotlin {
                 implementation(libs.org.jetbrains.compose.runtime)
                 implementation(libs.org.jetbrains.compose.ui)
                 implementation(libs.org.jetbrains.compose.foundation)
+
+                implementation(libs.dev.zacsweers.metrox.viewmodel)
+                implementation(libs.dev.zacsweers.metrox.viewmodel.compose)
             }
         }
 

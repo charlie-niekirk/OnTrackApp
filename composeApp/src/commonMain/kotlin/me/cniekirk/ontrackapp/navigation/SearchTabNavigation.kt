@@ -1,5 +1,9 @@
-package me.cniekirk.ontrackapp
+package me.cniekirk.ontrackapp.navigation
 
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
@@ -24,7 +28,7 @@ import me.cniekirk.ontrackapp.feature.stationsearch.navigation.StationSearch
 import me.cniekirk.ontrackapp.feature.stationsearch.navigation.stationSearch
 
 @Composable
-fun OnTrackNavigation(modifier: Modifier = Modifier) {
+fun SearchTabNavigation(modifier: Modifier = Modifier) {
     val config = SavedStateConfiguration {
         serializersModule = SerializersModule {
             polymorphic(NavKey::class) {
@@ -34,22 +38,17 @@ fun OnTrackNavigation(modifier: Modifier = Modifier) {
     }
 
     val backStack = rememberNavBackStack(config, Home)
-
     val resultEventBus = remember { ResultEventBus() }
 
     CompositionLocalProvider(LocalResultEventBus.provides(resultEventBus)) {
         NavDisplay(
-            modifier = modifier,
+            modifier = modifier.fillMaxSize(),
             entryDecorators = listOf(
-                // Then add the view model store decorator
                 rememberSaveableStateHolderNavEntryDecorator(),
                 rememberViewModelStoreNavEntryDecorator()
             ),
             backStack = backStack,
             onBack = { backStack.removeLastOrNull() },
-//        transitionSpec = { enterAnimation() togetherWith exitAnimation() },
-//        popTransitionSpec = { popEnterAnimation() togetherWith popExitAnimation() },
-//        predictivePopTransitionSpec = { popEnterAnimation() togetherWith popExitAnimation() },
             entryProvider = entryProvider {
                 home(
                     navigateToStationSelection = { stationType ->
@@ -64,7 +63,6 @@ fun OnTrackNavigation(modifier: Modifier = Modifier) {
                     backStack.removeLastOrNull()
                 }
                 serviceList {
-
                 }
             }
         )

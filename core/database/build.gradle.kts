@@ -70,6 +70,8 @@ kotlin {
                 implementation(libs.kotlin.stdlib)
                 implementation(libs.app.cash.sqldelight.runtime)
                 implementation(libs.org.jetbrains.kotlinx.serialization.json)
+
+                implementation(projects.core.common)
             }
         }
 

@@ -1,0 +1,172 @@
+name: PR Build & Test
+
+on:
+  pull_request:
+    branches:
+      - master
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  # Run all unit tests
+  test:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Run unit tests
+        run: ./gradlew test --continue
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            **/build/reports/tests/
+            **/build/test-results/
+          retention-days: 7
+
+  # Build Android APK
+  build-android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build debug APK
+        run: ./gradlew :composeApp:assembleDebug
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: composeApp/build/outputs/apk/debug/*.apk
+          retention-days: 14
+
+  # Build iOS App
+  build-ios:
+    name: Build iOS App
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Select Xcode version
+        run: sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+
+      - name: Build shared framework
+        run: ./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64
+
+      - name: Build iOS app
+        working-directory: iosApp
+        run: |
+          xcodebuild \
+            -project iosApp.xcodeproj \
+            -scheme iosApp \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' \
+            -derivedDataPath build \
+            build
+
+      - name: Create iOS app archive
+        run: |
+          cd iosApp/build/Build/Products/Debug-iphonesimulator
+          zip -r ${{ github.workspace }}/ios-app.zip *.app
+
+      - name: Upload iOS app artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-app
+          path: ios-app.zip
+          retention-days: 14
+
+  # Post comment with download links
+  comment-on-pr:
+    name: Post PR Comment
+    runs-on: ubuntu-latest
+    needs: [test, build-android, build-ios]
+    if: always() && github.event_name == 'pull_request'
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Get workflow run URL
+        id: run-url
+        run: |
+          echo "url=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_OUTPUT
+
+      - name: Determine build status
+        id: status
+        run: |
+          if [[ "${{ needs.test.result }}" == "success" && "${{ needs.build-android.result }}" == "success" && "${{ needs.build-ios.result }}" == "success" ]]; then
+            echo "overall=success" >> $GITHUB_OUTPUT
+            echo "emoji=:white_check_mark:" >> $GITHUB_OUTPUT
+          else
+            echo "overall=failure" >> $GITHUB_OUTPUT
+            echo "emoji=:x:" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Find existing comment
+        uses: peter-evans/find-comment@v3
+        id: find-comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: '## Build Status'
+
+      - name: Create or update PR comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          edit-mode: replace
+          body: |
+            ## Build Status ${{ steps.status.outputs.emoji }}
+
+            | Job | Status |
+            |-----|--------|
+            | Unit Tests | ${{ needs.test.result == 'success' && ':white_check_mark: Passed' || ':x: Failed' }} |
+            | Android Build | ${{ needs.build-android.result == 'success' && ':white_check_mark: Passed' || ':x: Failed' }} |
+            | iOS Build | ${{ needs.build-ios.result == 'success' && ':white_check_mark: Passed' || ':x: Failed' }} |
+
+            ### Download Artifacts
+
+            ${{ needs.build-android.result == 'success' && ':package: **Android APK** - [Download from workflow run](' || ':no_entry_sign: Android APK build failed - [View logs](' }}${{ steps.run-url.outputs.url }}${{ needs.build-android.result == 'success' && '#artifacts)' || ')' }}
+
+            ${{ needs.build-ios.result == 'success' && ':iphone: **iOS App** - [Download from workflow run](' || ':no_entry_sign: iOS App build failed - [View logs](' }}${{ steps.run-url.outputs.url }}${{ needs.build-ios.result == 'success' && '#artifacts)' || ')' }}
+
+            ---
+            <sub>:robot: This comment is automatically updated by CI</sub>

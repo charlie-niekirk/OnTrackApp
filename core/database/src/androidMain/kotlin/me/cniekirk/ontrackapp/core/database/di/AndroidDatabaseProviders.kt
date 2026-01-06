@@ -7,6 +7,7 @@ import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
+import me.cniekirk.ontrackapp.core.common.di.ApplicationContext
 import me.cniekirk.ontrackapp.core.database.DatabaseConstants
 import me.cniekirk.ontrackapp.core.database.StationDatabase
 
@@ -15,7 +16,7 @@ object AndroidDatabaseProviders {
 
     @Provides
     @SingleIn(AppScope::class)
-    fun provideSqlDriver(context: Context): SqlDriver {
+    fun provideSqlDriver(@ApplicationContext context: Context): SqlDriver {
         return AndroidSqliteDriver(StationDatabase.Schema, context, DatabaseConstants.DB_NAME)
     }
 }

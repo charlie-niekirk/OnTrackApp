@@ -13,6 +13,5 @@ class OnTrackApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-
     }
 }

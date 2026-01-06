@@ -33,12 +33,14 @@ kotlin {
             implementation(libs.androidx.activity.compose)
         }
         commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
+            implementation(libs.org.jetbrains.compose.runtime)
+            implementation(libs.org.jetbrains.compose.ui)
+            implementation(libs.org.jetbrains.compose.foundation)
+            implementation(libs.org.jetbrains.compose.animation)
+            implementation(libs.org.jetbrains.compose.material3)
+            implementation(libs.org.jetbrains.compose.material.icons.core)
+            implementation(libs.org.jetbrains.compose.components.ui.tooling.preview)
+            implementation(libs.org.jetbrains.compose.components.resources)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
 
