@@ -3,6 +3,7 @@ package me.cniekirk.ontrackapp
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.CompositionLocalProvider
@@ -26,7 +27,7 @@ fun SearchTabViewController(): UIViewController = ComposeUIViewController {
             SearchTabNavigation(
                 modifier = Modifier
                     .fillMaxSize()
-                    .windowInsetsPadding(WindowInsets.safeDrawing)
+                    .windowInsetsPadding(WindowInsets.statusBars)
             )
         }
     }
@@ -40,7 +41,7 @@ fun FavouritesTabViewController(): UIViewController = ComposeUIViewController {
             FavouritesTabContent(
                 modifier = Modifier
                     .fillMaxSize()
-                    .windowInsetsPadding(WindowInsets.safeDrawing)
+                    .windowInsetsPadding(WindowInsets.statusBars)
             )
         }
     }
@@ -54,7 +55,7 @@ fun SettingsTabViewController(): UIViewController = ComposeUIViewController {
             SettingsTabContent(
                 modifier = Modifier
                     .fillMaxSize()
-                    .windowInsetsPadding(WindowInsets.safeDrawing)
+                    .windowInsetsPadding(WindowInsets.statusBars)
             )
         }
     }

@@ -11,7 +11,7 @@ import dev.zacsweers.metrox.viewmodel.MetroViewModelFactory
 import dev.zacsweers.metrox.viewmodel.ViewModelAssistedFactory
 import me.cniekirk.ontrackapp.core.data.di.DataProviders
 import me.cniekirk.ontrackapp.core.database.di.IosDatabaseProviders
-import me.cniekirk.ontrackapp.core.network.IosNetworkProviders
+import me.cniekirk.ontrackapp.core.network.di.IosNetworkProviders
 import kotlin.reflect.KClass
 
 @DependencyGraph(
