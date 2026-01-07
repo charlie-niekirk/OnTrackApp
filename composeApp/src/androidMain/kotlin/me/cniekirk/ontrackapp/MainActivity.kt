@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.CompositionLocalProvider
 import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
+import me.cniekirk.ontrackapp.navigation.AndroidNavigationRoot
 
 class MainActivity : ComponentActivity() {
 
@@ -19,7 +20,7 @@ class MainActivity : ComponentActivity() {
             CompositionLocalProvider(
                 LocalMetroViewModelFactory provides graph.metroViewModelFactory
             ) {
-                App()
+                AndroidNavigationRoot()
             }
         }
     }

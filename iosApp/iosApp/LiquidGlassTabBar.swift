@@ -7,18 +7,21 @@ struct MainTabView: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             SearchTabView()
+                .ignoresSafeArea()
                 .tabItem {
                     Label("Search", systemImage: "magnifyingglass")
                 }
                 .tag(0)
 
             FavouritesTabView()
+                .ignoresSafeArea()
                 .tabItem {
                     Label("Favourites", systemImage: "heart.fill")
                 }
                 .tag(1)
 
             SettingsTabView()
+                .ignoresSafeArea()
                 .tabItem {
                     Label("Settings", systemImage: "gearshape.fill")
                 }
