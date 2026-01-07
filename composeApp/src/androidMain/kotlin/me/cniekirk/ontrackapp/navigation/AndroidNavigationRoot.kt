@@ -50,8 +50,8 @@ fun AndroidNavigationRoot(modifier: Modifier = Modifier) {
             ) { innerPadding ->
                 NavDisplay(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding),
+                        .fillMaxSize(),
+//                        .padding(innerPadding),
                     onBack = { navigator.goBack() },
                     entries = navigationState.toEntries(
                         entryProvider = entryProvider {
