@@ -6,35 +6,60 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSerializable
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberDecoratedNavEntries
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
-import androidx.navigation3.runtime.serialization.NavKeySerializer
 import androidx.savedstate.compose.serialization.serializers.MutableStateSerializer
+import androidx.savedstate.serialization.SavedStateConfiguration
+import kotlinx.serialization.PolymorphicSerializer
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
+import me.cniekirk.ontrackapp.feature.home.navigation.Home
+import me.cniekirk.ontrackapp.feature.servicelist.ServiceList
+import me.cniekirk.ontrackapp.feature.stationsearch.navigation.StationSearch
 
-/**
- * Create a navigation state that persists config changes and process death.
- */
+class NavigationState(
+    val startRoute: NavKey,
+    topLevelRoute: MutableState<NavKey>,
+    val backStacks: Map<NavKey, NavBackStack<NavKey>>
+) {
+    var topLevelRoute by topLevelRoute
+
+    val stacksInUse: List<NavKey>
+        get() = if (topLevelRoute == startRoute) {
+            listOf(startRoute)
+        } else {
+            listOf(startRoute, topLevelRoute)
+        }
+}
+
 @Composable
 fun rememberNavigationState(
     startRoute: NavKey,
     topLevelRoutes: Set<NavKey>
 ): NavigationState {
-
     val topLevelRoute = rememberSerializable(
-        startRoute, topLevelRoutes,
-        serializer = MutableStateSerializer(NavKeySerializer())
+        startRoute,
+        topLevelRoutes,
+        configuration = serializersConfig,
+        serializer = MutableStateSerializer(PolymorphicSerializer(NavKey::class))
     ) {
         mutableStateOf(startRoute)
     }
 
-    val backStacks = topLevelRoutes.associateWith { key -> rememberNavBackStack(key) }
+    val backStacks = topLevelRoutes.associateWith { key ->
+        rememberNavBackStack(
+            configuration = serializersConfig,
+            key
+        )
+    }
 
     return remember(startRoute, topLevelRoutes) {
         NavigationState(
@@ -45,39 +70,26 @@ fun rememberNavigationState(
     }
 }
 
-/**
- * State holder for navigation state.
- *
- * @param startRoute - the start route. The user will exit the app through this route.
- * @param topLevelRoute - the current top level route
- * @param backStacks - the back stacks for each top level route
- */
-class NavigationState(
-    val startRoute: NavKey,
-    topLevelRoute: MutableState<NavKey>,
-    val backStacks: Map<NavKey, NavBackStack<NavKey>>
-) {
-    var topLevelRoute: NavKey by topLevelRoute
-    val stacksInUse: List<NavKey>
-        get() = if (topLevelRoute == startRoute) {
-            listOf(startRoute)
-        } else {
-            listOf(startRoute, topLevelRoute)
+val serializersConfig = SavedStateConfiguration {
+    serializersModule = SerializersModule {
+        polymorphic(NavKey::class) {
+            subclass(Home::class, Home.serializer())
+            subclass(StationSearch::class, StationSearch.serializer())
+            subclass(ServiceList::class, ServiceList.serializer())
+            subclass(Favourites::class, Favourites.serializer())
+            subclass(Settings::class, Settings.serializer())
         }
-
+    }
 }
 
-/**
- * Convert NavigationState into NavEntries.
- */
 @Composable
 fun NavigationState.toEntries(
     entryProvider: (NavKey) -> NavEntry<NavKey>
 ): SnapshotStateList<NavEntry<NavKey>> {
-
     val decoratedEntries = backStacks.mapValues { (_, stack) ->
         val decorators = listOf(
             rememberSaveableStateHolderNavEntryDecorator<NavKey>(),
+            rememberViewModelStoreNavEntryDecorator()
         )
         rememberDecoratedNavEntries(
             backStack = stack,
