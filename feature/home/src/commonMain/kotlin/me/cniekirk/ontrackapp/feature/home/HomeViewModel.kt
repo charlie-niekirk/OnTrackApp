@@ -1,7 +1,11 @@
 package me.cniekirk.ontrackapp.feature.home
 
 import androidx.lifecycle.ViewModel
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.binding
+import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import me.cniekirk.ontrackapp.core.common.model.StationType
 import me.cniekirk.ontrackapp.core.domain.model.Station
 import me.cniekirk.ontrackapp.core.domain.model.arguments.ServiceListRequest
@@ -11,6 +15,11 @@ import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
 
 @Inject
+@ViewModelKey(HomeViewModel::class)
+@ContributesIntoMap(
+    scope = AppScope::class,
+    binding = binding<ViewModel>()
+)
 class HomeViewModel(
 
 ) : ViewModel(), ContainerHost<HomeState, HomeEffect> {
