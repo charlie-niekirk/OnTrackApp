@@ -11,20 +11,18 @@ import me.cniekirk.ontrackapp.core.domain.model.Station
 import me.cniekirk.ontrackapp.core.domain.model.arguments.ServiceListRequest
 import me.cniekirk.ontrackapp.core.domain.model.arguments.ServiceListType
 import me.cniekirk.ontrackapp.core.domain.model.arguments.TrainStation
+import me.cniekirk.ontrackapp.core.domain.repository.RecentSearchesRepository
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
 
 @Inject
 @ViewModelKey(HomeViewModel::class)
-@ContributesIntoMap(
-    scope = AppScope::class,
-    binding = binding<ViewModel>()
-)
+@ContributesIntoMap(scope = AppScope::class, binding = binding<ViewModel>())
 class HomeViewModel(
-
+    private val recentSearchesRepository: RecentSearchesRepository
 ) : ViewModel(), ContainerHost<HomeState, HomeEffect> {
 
-    override val container = container<HomeState, HomeEffect>(HomeState())
+    override val container = container<HomeState, HomeEffect>(HomeState(recentSearches = recentSearchesRepository.recentSearches))
 
     fun updateQueryType(queryType: QueryType) = intent {
         reduce {
@@ -94,6 +92,7 @@ class HomeViewModel(
                     }
                 }
 
+                recentSearchesRepository.cacheRecentSearch(serviceListRequest)
                 postSideEffect(HomeEffect.NavigateToServiceList(serviceListRequest))
             }
         }

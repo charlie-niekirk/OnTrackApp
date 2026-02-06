@@ -66,6 +66,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.kotlin.stdlib)
+                implementation(libs.org.jetbrains.kotlinx.coroutines.core)
 
                 implementation(projects.core.datastore)
                 implementation(projects.core.database)
