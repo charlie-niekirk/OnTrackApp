@@ -67,6 +67,7 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin.stdlib)
 
+                implementation(projects.core.datastore)
                 implementation(projects.core.database)
                 implementation(projects.core.domain)
                 implementation(projects.core.network)
