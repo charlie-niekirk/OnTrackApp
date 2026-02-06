@@ -15,8 +15,7 @@ import me.cniekirk.ontrackapp.core.network.di.AndroidNetworkProviders
     bindingContainers = [
         DataProviders::class,
         AndroidNetworkProviders::class,
-        AndroidDatabaseProviders::class,
-        ViewModelRegistry::class
+        AndroidDatabaseProviders::class
     ]
 )
 interface AndroidOnTrackAppGraph : OnTrackAppGraph {
