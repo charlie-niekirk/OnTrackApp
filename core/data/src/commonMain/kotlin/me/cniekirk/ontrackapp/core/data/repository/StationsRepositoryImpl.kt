@@ -1,11 +1,16 @@
 package me.cniekirk.ontrackapp.core.data.repository
 
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
 import me.cniekirk.ontrackapp.core.database.StationDatabase
 import me.cniekirk.ontrackapp.core.domain.model.Station
 import me.cniekirk.ontrackapp.core.domain.repository.StationsRepository
 import me.cniekirk.ontrackapp.core.network.service.OpenRailDataService
 
-internal class StationsRepositoryImpl(
+@ContributesBinding(AppScope::class)
+@Inject
+class StationsRepositoryImpl(
     private val openRailDataService: OpenRailDataService,
     private val stationDatabase: StationDatabase
 ) : StationsRepository {

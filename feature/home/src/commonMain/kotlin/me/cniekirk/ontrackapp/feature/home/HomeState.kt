@@ -1,7 +1,10 @@
 package me.cniekirk.ontrackapp.feature.home
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import me.cniekirk.ontrackapp.core.domain.model.Station
 import me.cniekirk.ontrackapp.core.domain.model.arguments.RequestTime
+import me.cniekirk.ontrackapp.core.domain.model.arguments.ServiceListRequest
 
 sealed interface StationSelection {
 
@@ -21,5 +24,5 @@ data class HomeState(
     val filterStationSelection: StationSelection = StationSelection.None,
     val requestTime: RequestTime = RequestTime.Now,
 //    val currentDateMillis: Long,
-//    val recentSearches: List<ServiceListRequest> = emptyList()
+    val recentSearches: Flow<List<ServiceListRequest>> = flowOf(emptyList())
 )

@@ -1,34 +1,34 @@
 [versions]
-agp = "8.11.2"
+agp = "9.0.0"
 android-compileSdk = "36"
 android-minSdk = "28"
 android-targetSdk = "36"
-androidx-activity = "1.12.2"
+androidx-activity = "1.12.3"
 androidx-appcompat = "1.7.1"
 androidx-core = "1.17.0"
 androidx-espresso = "3.7.0"
 androidx-lifecycle = "2.9.6"
 androidx-testExt = "1.3.0"
-composeMultiplatform = "1.10.0-rc02"
+composeMultiplatform = "1.10.0"
 junit = "4.13.2"
-kotlin = "2.3.0"
-kotlinStdlib = "2.3.0"
+kotlin = "2.3.20-Beta2"
 runner = "1.7.0"
 core = "1.7.0"
-jetbrainsCompose = "1.10.0-rc02"
-jetbrainsMaterial3 = "1.11.0-alpha01"
+jetbrainsCompose = "1.10.0"
+jetbrainsMaterial3 = "1.10.0-alpha05"
 materialIcons = "1.7.3"
 
-kotlinSerialisation = "1.10.0-RC"
-ktor = "3.3.3"
-metro = "0.9.2"
-jetbrainsKotlinJvm = "2.3.0"
+kotlinSerialisation = "1.10.0"
+ktor = "3.4.0"
+metro = "0.10.2"
 sqlDelight = "2.2.1"
 orbit-mvi = "11.0.0"
 multiplatform-nav3-ui = "1.0.0-alpha06"
-compose-multiplatform-lifecycle = "2.10.0-alpha07"
+compose-multiplatform-lifecycle = "2.10.0-alpha08"
 kermit = "2.0.8"
 coroutines = "1.10.2"
+datastore = "1.2.0"
+okio = "3.16.4"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -42,12 +42,14 @@ androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "a
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 androidx-lifecycle-viewmodelCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version = "2.9.4" }
 
-kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlinStdlib" }
+kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
 androidx-runner = { group = "androidx.test", name = "runner", version.ref = "runner" }
 androidx-core = { group = "androidx.test", name = "core", version.ref = "core" }
 
 org-jetbrains-kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinSerialisation" }
+org-jetbrains-kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
 org-jetbrains-kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
 
 org-jetbrains-compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "jetbrainsCompose" }
@@ -55,13 +57,15 @@ org-jetbrains-compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref
 org-jetbrains-compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "jetbrainsCompose" }
 org-jetbrains-compose-animation = { module = "org.jetbrains.compose.animation:animation", version.ref = "jetbrainsCompose" }
 org-jetbrains-compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "jetbrainsMaterial3" }
-org-jetbrains-compose-components-ui-tooling-preview = { module = "org.jetbrains.compose.components:components-ui-tooling-preview", version.ref ="jetbrainsCompose" }
+org-jetbrains-compose-ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref ="jetbrainsCompose" }
+org-jetbrains-compose-ui-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "jetbrainsCompose" }
 org-jetbrains-compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref ="jetbrainsCompose" }
 org-jetbrains-compose-material-icons-core = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "materialIcons" }
 
 org-jetbrains-navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "multiplatform-nav3-ui" }
 org-jetbrains-lifecycle-viewmodel-navigation3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "compose-multiplatform-lifecycle" }
 
+dev-zacsweers-metrox-android = { group = "dev.zacsweers.metro", name = "metrox-android", version.ref = "metro" }
 dev-zacsweers-metrox-viewmodel = { group = "dev.zacsweers.metro", name = "metrox-viewmodel", version.ref = "metro" }
 dev-zacsweers-metrox-viewmodel-compose = { group = "dev.zacsweers.metro", name = "metrox-viewmodel-compose", version.ref = "metro" }
 
@@ -84,15 +88,19 @@ org-orbit-mvi-test = { group = "org.orbit-mvi", name = "orbit-test", version.ref
 
 co-touchlab-kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 
+androidx-datastore-core-okio = { group = "androidx.datastore", name = "datastore-core-okio", version.ref = "datastore" }
+squareup-okio = { group = "com.squareup.okio", name = "okio", version.ref = "okio" }
+
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 androidKotlinMultiplatformLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 androidLint = { id = "com.android.lint", version.ref = "agp" }
 dev-zacsweers-metro = { id = "dev.zacsweers.metro", version.ref = "metro" }
-jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
+jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqlDelight" }

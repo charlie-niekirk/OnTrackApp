@@ -2,28 +2,24 @@ package me.cniekirk.ontrackapp
 
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.ComposeUIViewController
-import dev.zacsweers.metro.createGraph
 import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
-import me.cniekirk.ontrackapp.di.IosOnTrackAppGraph
+import me.cniekirk.ontrackapp.di.iosGraph
 import me.cniekirk.ontrackapp.navigation.FavouritesTabContent
 import me.cniekirk.ontrackapp.navigation.SearchTabNavigation
 import me.cniekirk.ontrackapp.navigation.SettingsTabContent
+import me.cniekirk.ontrackapp.theme.ThemeHost
 import platform.UIKit.UIViewController
-
-private val graph by lazy { createGraph<IosOnTrackAppGraph>() }
 
 fun SearchTabViewController(): UIViewController = ComposeUIViewController {
     CompositionLocalProvider(
-        LocalMetroViewModelFactory provides graph.metroViewModelFactory
+        LocalMetroViewModelFactory provides iosGraph.metroViewModelFactory
     ) {
-        MaterialTheme {
+        ThemeHost(themePreferencesRepository = iosGraph.themePreferencesRepository) { _, _ ->
             SearchTabNavigation(
                 modifier = Modifier
                     .fillMaxSize()
@@ -35,9 +31,9 @@ fun SearchTabViewController(): UIViewController = ComposeUIViewController {
 
 fun FavouritesTabViewController(): UIViewController = ComposeUIViewController {
     CompositionLocalProvider(
-        LocalMetroViewModelFactory provides graph.metroViewModelFactory
+        LocalMetroViewModelFactory provides iosGraph.metroViewModelFactory
     ) {
-        MaterialTheme {
+        ThemeHost(themePreferencesRepository = iosGraph.themePreferencesRepository) { _, _ ->
             FavouritesTabContent(
                 modifier = Modifier
                     .fillMaxSize()
@@ -49,10 +45,12 @@ fun FavouritesTabViewController(): UIViewController = ComposeUIViewController {
 
 fun SettingsTabViewController(): UIViewController = ComposeUIViewController {
     CompositionLocalProvider(
-        LocalMetroViewModelFactory provides graph.metroViewModelFactory
+        LocalMetroViewModelFactory provides iosGraph.metroViewModelFactory
     ) {
-        MaterialTheme {
+        ThemeHost(themePreferencesRepository = iosGraph.themePreferencesRepository) { currentThemeMode, onThemeModeSelected ->
             SettingsTabContent(
+                currentThemeMode = currentThemeMode,
+                onThemeModeSelected = onThemeModeSelected,
                 modifier = Modifier
                     .fillMaxSize()
                     .windowInsetsPadding(WindowInsets.statusBars)
