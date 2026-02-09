@@ -29,6 +29,7 @@ dependencyResolutionManagement {
 }
 
 include(":composeApp")
+include(":androidApp")
 include(":core:network")
 include(":core:data")
 include(":core:domain")
@@ -37,3 +38,5 @@ include(":feature:home")
 include(":feature:stationsearch")
 include(":core:common")
 include(":feature:servicelist")
+include(":core:datastore")
+include(":core:designsystem")

@@ -19,15 +19,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import me.cniekirk.ontrackapp.core.designsystem.theme.OnTrackTheme
 import me.cniekirk.ontrackapp.core.domain.model.Station
+import me.cniekirk.ontrackapp.core.domain.model.theme.ThemeMode
 import me.cniekirk.ontrackapp.feature.home.StationSelection
 import ontrackapp.feature.home.generated.resources.Res
 import ontrackapp.feature.home.generated.resources.cd_clear_station
 import ontrackapp.feature.home.generated.resources.empty_departing_station
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 internal fun StationCard(
@@ -90,7 +92,7 @@ internal fun StationCard(
 @Preview
 @Composable
 private fun StationCardSelectedPreview() {
-    MaterialTheme {
+    OnTrackTheme(themeMode = ThemeMode.SYSTEM) {
         Surface {
             StationCard(
                 stationSelection = StationSelection.Selected(Station("London Bridge", "LBG")),
@@ -105,7 +107,7 @@ private fun StationCardSelectedPreview() {
 @Preview
 @Composable
 private fun StationCardNonePreview() {
-    MaterialTheme {
+    OnTrackTheme(themeMode = ThemeMode.SYSTEM) {
         Surface {
             StationCard(
                 stationSelection = StationSelection.None,

@@ -1,5 +1,8 @@
 package me.cniekirk.ontrackapp.core.data.repository
 
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
 import me.cniekirk.ontrackapp.core.domain.model.RunDate
 import me.cniekirk.ontrackapp.core.domain.model.servicedetails.ServiceDetails
 import me.cniekirk.ontrackapp.core.domain.model.services.Platform
@@ -13,7 +16,9 @@ import me.cniekirk.ontrackapp.core.network.model.realtimetrains.servicelist.Boar
 import me.cniekirk.ontrackapp.core.network.service.RealTimeTrainsService
 import me.cniekirk.ontrackapp.core.domain.model.servicedetails.Location as DomainLocation
 
-internal class RealTimeTrainsRepositoryImpl(
+@ContributesBinding(AppScope::class)
+@Inject
+class RealTimeTrainsRepositoryImpl(
     private val realTimeTrainsService: RealTimeTrainsService
 ) : RealtimeTrainsRepository {
 

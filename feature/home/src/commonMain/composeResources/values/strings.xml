@@ -8,6 +8,9 @@
     <string name="departures_title">Departures</string>
     <string name="arrivals_title">Arrivals</string>
 
+    <string name="departing_prefix">Departing</string>
+    <string name="arriving_prefix">Arriving</string>
+
     <string name="now_departure_time">Today, now</string>
     <string name="set_departure_time">%1$s/%2$s/%3$s at %4$s:%5$s</string>
 

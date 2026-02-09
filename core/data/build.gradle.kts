@@ -39,12 +39,6 @@ kotlin {
     // https://developer.android.com/kotlin/multiplatform/migrate
     val xcfName = "core:dataKit"
 
-    iosX64 {
-        binaries.framework {
-            baseName = xcfName
-        }
-    }
-
     iosArm64 {
         binaries.framework {
             baseName = xcfName
@@ -66,7 +60,9 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.kotlin.stdlib)
+                implementation(libs.org.jetbrains.kotlinx.coroutines.core)
 
+                implementation(projects.core.datastore)
                 implementation(projects.core.database)
                 implementation(projects.core.domain)
                 implementation(projects.core.network)
@@ -76,6 +72,7 @@ kotlin {
         commonTest {
             dependencies {
                 implementation(libs.kotlin.test)
+                implementation(libs.org.jetbrains.kotlinx.coroutines.test)
             }
         }
 

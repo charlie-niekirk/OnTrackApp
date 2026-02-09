@@ -44,12 +44,6 @@ kotlin {
     // https://developer.android.com/kotlin/multiplatform/migrate
     val xcfName = "feature:homeKit"
 
-    iosX64 {
-        binaries.framework {
-            baseName = xcfName
-        }
-    }
-
     iosArm64 {
         binaries.framework {
             baseName = xcfName
@@ -79,7 +73,7 @@ kotlin {
                 implementation(libs.org.jetbrains.compose.foundation)
                 implementation(libs.org.jetbrains.compose.animation)
                 implementation(libs.org.jetbrains.compose.material3)
-                implementation(libs.org.jetbrains.compose.components.ui.tooling.preview)
+                implementation(libs.org.jetbrains.compose.ui.tooling.preview)
                 implementation(libs.org.jetbrains.compose.components.resources)
 
                 implementation(libs.org.jetbrains.navigation3.ui)
@@ -132,4 +126,9 @@ kotlin {
         }
     }
 
+}
+
+dependencies {
+    androidRuntimeClasspath(libs.org.jetbrains.compose.ui.tooling)
+    androidRuntimeClasspath(libs.org.jetbrains.compose.components.resources)
 }
