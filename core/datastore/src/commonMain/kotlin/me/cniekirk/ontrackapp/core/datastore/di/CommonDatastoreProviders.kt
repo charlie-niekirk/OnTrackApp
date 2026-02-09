@@ -7,7 +7,10 @@ import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
 import me.cniekirk.ontrackapp.core.datastore.RecentSearchesDataSource
 import me.cniekirk.ontrackapp.core.datastore.RecentSearchesDataSourceImpl
+import me.cniekirk.ontrackapp.core.datastore.ThemePreferencesDataSource
+import me.cniekirk.ontrackapp.core.datastore.ThemePreferencesDataSourceImpl
 import me.cniekirk.ontrackapp.core.datastore.model.RecentSearches
+import me.cniekirk.ontrackapp.core.datastore.model.ThemePreferences
 
 @BindingContainer
 object CommonDatastoreProviders {
@@ -18,5 +21,13 @@ object CommonDatastoreProviders {
         dataStore: DataStore<RecentSearches>
     ): RecentSearchesDataSource {
         return RecentSearchesDataSourceImpl(dataStore)
+    }
+
+    @Provides
+    @SingleIn(AppScope::class)
+    fun provideThemePreferencesDataSource(
+        dataStore: DataStore<ThemePreferences>
+    ): ThemePreferencesDataSource {
+        return ThemePreferencesDataSourceImpl(dataStore)
     }
 }

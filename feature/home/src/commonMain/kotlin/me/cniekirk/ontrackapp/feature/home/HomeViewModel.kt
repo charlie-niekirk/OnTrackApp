@@ -97,4 +97,12 @@ class HomeViewModel(
             }
         }
     }
+
+    fun recentSearchClicked(serviceListRequest: ServiceListRequest) = intent {
+        postSideEffect(HomeEffect.NavigateToServiceList(serviceListRequest))
+    }
+
+    fun clearRecentSearches() = intent {
+        recentSearchesRepository.deleteAllRecentSearches()
+    }
 }

@@ -8,9 +8,12 @@ import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
 import me.cniekirk.ontrackapp.core.datastore.RECENT_SEARCHES_FILE_NAME
+import me.cniekirk.ontrackapp.core.datastore.THEME_PREFERENCES_FILE_NAME
 import me.cniekirk.ontrackapp.core.datastore.getDataStorePath
 import me.cniekirk.ontrackapp.core.datastore.model.RecentSearches
+import me.cniekirk.ontrackapp.core.datastore.model.ThemePreferences
 import me.cniekirk.ontrackapp.core.datastore.serializer.RecentSearchesSerializer
+import me.cniekirk.ontrackapp.core.datastore.serializer.ThemePreferencesSerializer
 import okio.FileSystem
 
 @BindingContainer(includes = [CommonDatastoreProviders::class])
@@ -24,6 +27,18 @@ object IosDatastoreProviders {
                 fileSystem = FileSystem.SYSTEM,
                 serializer = RecentSearchesSerializer,
                 producePath = { getDataStorePath(RECENT_SEARCHES_FILE_NAME) }
+            )
+        )
+    }
+
+    @Provides
+    @SingleIn(AppScope::class)
+    fun provideThemePreferencesDataStore(): DataStore<ThemePreferences> {
+        return DataStoreFactory.create(
+            storage = OkioStorage(
+                fileSystem = FileSystem.SYSTEM,
+                serializer = ThemePreferencesSerializer,
+                producePath = { getDataStorePath(THEME_PREFERENCES_FILE_NAME) }
             )
         )
     }
