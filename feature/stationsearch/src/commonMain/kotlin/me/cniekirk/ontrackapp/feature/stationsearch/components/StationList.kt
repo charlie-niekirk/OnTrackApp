@@ -24,9 +24,9 @@ fun StationList(
     onStationClicked: (Station) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Scaffold { innerPadding ->
+    Scaffold(modifier = modifier) { innerPadding ->
         LazyColumn(
-            modifier = modifier.consumeWindowInsets(innerPadding),
+//            modifier = modifier.consumeWindowInsets(innerPadding),
             contentPadding = innerPadding
         ) {
             items(stations) { station ->
