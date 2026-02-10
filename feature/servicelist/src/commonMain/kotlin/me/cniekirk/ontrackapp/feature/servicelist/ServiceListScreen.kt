@@ -143,10 +143,7 @@ private fun ServiceListScreen(
                     CircularWavyProgressIndicator()
                 } else {
                     LazyColumn(
-                        modifier = Modifier
-                            .consumeWindowInsets(innerPadding)
-                            .padding(top = 16.dp)
-                            .fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
                         contentPadding = innerPadding
                     ) {
                         items(state.trainServiceList) { trainService ->

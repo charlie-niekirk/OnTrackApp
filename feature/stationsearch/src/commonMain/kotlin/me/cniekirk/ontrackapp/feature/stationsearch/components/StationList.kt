@@ -25,7 +25,6 @@ fun StationList(
     modifier: Modifier = Modifier,
 ) {
     Scaffold { innerPadding ->
-        Logger.d("Padding - Top: ${innerPadding.calculateTopPadding().value}, Bottom: ${innerPadding.calculateBottomPadding().value}")
         LazyColumn(
             modifier = modifier.consumeWindowInsets(innerPadding),
             contentPadding = innerPadding
