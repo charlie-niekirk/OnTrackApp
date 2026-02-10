@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,6 +16,7 @@ import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,12 +25,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import me.cniekirk.ontrackapp.core.domain.model.arguments.ServiceDetailRequest
 import me.cniekirk.ontrackapp.core.domain.model.arguments.ServiceListType
 import me.cniekirk.ontrackapp.core.domain.model.services.Platform
 import me.cniekirk.ontrackapp.core.domain.model.services.ServiceLocation
 import me.cniekirk.ontrackapp.core.domain.model.services.TimeStatus
 import me.cniekirk.ontrackapp.core.domain.model.services.TrainService
-import me.cniekirk.ontrackapp.core.domain.model.arguments.ServiceDetailRequest
 import ontrackapp.feature.servicelist.generated.resources.Res
 import ontrackapp.feature.servicelist.generated.resources.arrivals
 import ontrackapp.feature.servicelist.generated.resources.arrived_delayed_time_status
@@ -80,76 +82,78 @@ private fun ServiceListScreen(
     state: ServiceListState,
     serviceClicked: (String) -> Unit
 ) {
-    Column(
+    Scaffold(
         modifier = Modifier
             .fillMaxSize()
             .background(color = MaterialTheme.colorScheme.background),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        val prefixText = when (state.serviceListType) {
-            ServiceListType.DEPARTURES -> stringResource(Res.string.departures)
-            ServiceListType.ARRIVALS -> stringResource(Res.string.arrivals)
-        }
-
-        Text(
-            modifier = Modifier
-                .align(Alignment.Start)
-                .padding(
-                    top = 16.dp,
-                    start = 16.dp
-                ),
-            text = prefixText,
-            style = MaterialTheme.typography.titleMedium
-        )
-
-        Row(
-            modifier = Modifier
-                .align(Alignment.Start)
-                .padding(
-                    top = 4.dp,
-                    start = 16.dp,
-                    end = 16.dp
-                ),
-            verticalAlignment = Alignment.CenterVertically
+    ) { innerPadding ->
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val filter = state.filterStation
-            val stationTitleText = if (filter != null) {
-                when (state.serviceListType) {
-                    ServiceListType.DEPARTURES -> stringResource(Res.string.to, state.targetStation, filter)
-                    ServiceListType.ARRIVALS -> stringResource(Res.string.from, state.targetStation, filter)
-                }
-            } else state.targetStation
+            val prefixText = when (state.serviceListType) {
+                ServiceListType.DEPARTURES -> stringResource(Res.string.departures)
+                ServiceListType.ARRIVALS -> stringResource(Res.string.arrivals)
+            }
 
             Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = stationTitleText,
-                style = MaterialTheme.typography.titleMedium,
-                maxLines = 2,
-                fontWeight = FontWeight.Bold
+                modifier = Modifier
+                    .align(Alignment.Start)
+                    .padding(
+                        top = 16.dp,
+                        start = 16.dp
+                    ),
+                text = prefixText,
+                style = MaterialTheme.typography.titleMedium
             )
-        }
 
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ) {
-            if (state.isLoading) {
-                CircularWavyProgressIndicator()
-            } else {
-                LazyColumn(
-                    modifier = Modifier
-                        .padding(top = 16.dp)
-                        .fillMaxSize()
-                ) {
-                    items(state.trainServiceList) { trainService ->
-                        TrainServiceListItem(
-                            trainService = trainService,
-                            serviceListType = state.serviceListType,
-                            onServiceClicked = { serviceClicked(it) }
-                        )
-                        HorizontalDivider()
+            Row(
+                modifier = Modifier
+                    .align(Alignment.Start)
+                    .padding(
+                        top = 4.dp,
+                        start = 16.dp,
+                        end = 16.dp
+                    ),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                val filter = state.filterStation
+                val stationTitleText = if (filter != null) {
+                    when (state.serviceListType) {
+                        ServiceListType.DEPARTURES -> stringResource(Res.string.to, state.targetStation, filter)
+                        ServiceListType.ARRIVALS -> stringResource(Res.string.from, state.targetStation, filter)
+                    }
+                } else state.targetStation
+
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stationTitleText,
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 2,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                if (state.isLoading) {
+                    CircularWavyProgressIndicator()
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = innerPadding
+                    ) {
+                        items(state.trainServiceList) { trainService ->
+                            TrainServiceListItem(
+                                trainService = trainService,
+                                serviceListType = state.serviceListType,
+                                onServiceClicked = { serviceClicked(it) }
+                            )
+                            HorizontalDivider()
+                        }
                     }
                 }
             }

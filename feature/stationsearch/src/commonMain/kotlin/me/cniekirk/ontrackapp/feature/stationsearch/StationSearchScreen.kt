@@ -18,7 +18,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import co.touchlab.kermit.Logger
 import me.cniekirk.ontrackapp.core.common.model.StationResult
 import me.cniekirk.ontrackapp.core.domain.model.Station
 import me.cniekirk.ontrackapp.feature.stationsearch.components.StationList
@@ -45,7 +44,6 @@ fun StationSearchScreen(
         state = state,
         onQueryChanged = viewModel::searchStations,
         onStationClicked = {
-            Logger.d("Station CLICKED: CRS: ${it.crs}, NAME: ${it.name}")
             onStationResult(
                 StationResult(
                     stationType = state.stationType,

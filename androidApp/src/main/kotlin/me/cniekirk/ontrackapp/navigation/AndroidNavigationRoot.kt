@@ -1,6 +1,7 @@
 package me.cniekirk.ontrackapp.navigation
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -42,12 +43,14 @@ fun AndroidNavigationRoot(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(innerPadding)
+                            .consumeWindowInsets(innerPadding)
                     )
 
                     TopLevelDestinationKey.Favourites -> FavouritesTabContent(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(innerPadding)
+                            .consumeWindowInsets(innerPadding)
                     )
 
                     TopLevelDestinationKey.Settings -> SettingsTabContent(
@@ -56,6 +59,7 @@ fun AndroidNavigationRoot(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(innerPadding)
+                            .consumeWindowInsets(innerPadding)
                     )
                 }
             }
