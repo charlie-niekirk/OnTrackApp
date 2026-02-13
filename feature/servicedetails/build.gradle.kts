@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
@@ -11,17 +9,14 @@ plugins {
 }
 
 kotlin {
+
     // Target declarations - add or remove as needed below. These define
     // which platforms this KMP module supports.
     // See: https://kotlinlang.org/docs/multiplatform-discover-project.html#targets
     androidLibrary {
-        namespace = "me.cniekirk.ontrackapp.feature.servicelist"
+        namespace = "me.cniekirk.ontrackapp.feature.servicedetails"
         compileSdk = 36
         minSdk = 28
-
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
-        }
 
         withHostTestBuilder {
         }
@@ -31,8 +26,6 @@ kotlin {
         }.configure {
             instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
-
-        experimentalProperties["android.experimental.kmp.enableAndroidResources"] = true
     }
 
     // For iOS targets, this is also where you should
@@ -42,7 +35,7 @@ kotlin {
     // A step-by-step guide on how to include this library in an XCode
     // project can be found here:
     // https://developer.android.com/kotlin/multiplatform/migrate
-    val xcfName = "feature:homeKit"
+    val xcfName = "feature:servicedetailsKit"
 
     iosArm64 {
         binaries.framework {
@@ -87,10 +80,9 @@ kotlin {
                 implementation(libs.dev.zacsweers.metrox.viewmodel)
                 implementation(libs.dev.zacsweers.metrox.viewmodel.compose)
 
-                implementation(libs.co.touchlab.kermit)
-
                 implementation(projects.core.domain)
                 implementation(projects.core.common)
+                implementation(projects.core.designsystem)
             }
         }
 
@@ -127,9 +119,4 @@ kotlin {
         }
     }
 
-}
-
-dependencies {
-    androidRuntimeClasspath(libs.org.jetbrains.compose.ui.tooling)
-    androidRuntimeClasspath(libs.org.jetbrains.compose.components.resources)
 }

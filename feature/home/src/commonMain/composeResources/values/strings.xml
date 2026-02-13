@@ -11,6 +11,7 @@
     <string name="departing_prefix">Departing</string>
     <string name="arriving_prefix">Arriving</string>
 
+    <string name="request_time_title">When</string>
     <string name="now_departure_time">Today, now</string>
     <string name="set_departure_time">%1$s/%2$s/%3$s at %4$s:%5$s</string>
 
@@ -20,6 +21,7 @@
     <string name="button_search">Search</string>
 
     <string name="cd_clear_station">Clear station</string>
+    <string name="cd_use_now">Use now</string>
 
     <string name="recent_searches_title">Recent Searches</string>
     <string name="no_recent_searches">No recent searches</string>

@@ -64,6 +64,7 @@ kotlin {
             api(projects.feature.home)
             api(projects.feature.stationsearch)
             api(projects.feature.servicelist)
+            api(projects.feature.servicedetails)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

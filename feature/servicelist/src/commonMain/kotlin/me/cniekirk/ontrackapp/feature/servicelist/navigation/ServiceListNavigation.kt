@@ -1,4 +1,4 @@
-package me.cniekirk.ontrackapp.feature.servicelist
+package me.cniekirk.ontrackapp.feature.servicelist.navigation
 
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
@@ -6,6 +6,8 @@ import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.serialization.Serializable
 import me.cniekirk.ontrackapp.core.domain.model.arguments.ServiceDetailRequest
 import me.cniekirk.ontrackapp.core.domain.model.arguments.ServiceListRequest
+import me.cniekirk.ontrackapp.feature.servicelist.ServiceListRoute
+import me.cniekirk.ontrackapp.feature.servicelist.ServiceListViewModel
 
 @Serializable
 data class ServiceList(
