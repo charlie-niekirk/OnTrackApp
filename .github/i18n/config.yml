@@ -1,0 +1,28 @@
+{
+  "source_globs": [
+    "**/src/commonMain/composeResources/values/strings.xml"
+  ],
+  "exclude_globs": [
+    "**/build/**"
+  ],
+  "target_locales": [
+    "es",
+    "fr",
+    "de",
+    "it"
+  ],
+  "provider": {
+    "endpoint": "https://models.github.ai/inference/chat/completions",
+    "model": "openai/gpt-4.1-mini",
+    "temperature": 0,
+    "request_timeout_seconds": 90
+  },
+  "pr": {
+    "branch": "automation/i18n-translations",
+    "title": "chore(i18n): automated translation updates",
+    "labels": [
+      "i18n",
+      "automated"
+    ]
+  }
+}

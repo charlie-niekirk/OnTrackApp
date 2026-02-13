@@ -1,0 +1,131 @@
+name: i18n Auto Translate
+
+on:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - '**/src/commonMain/composeResources/values/strings.xml'
+      - '.github/i18n/**'
+      - 'tools/i18n/**'
+      - '.github/workflows/i18n-auto-translate.yml'
+  push:
+    branches:
+      - master
+    paths:
+      - '**/src/commonMain/composeResources/values/strings.xml'
+      - '.github/i18n/**'
+      - 'tools/i18n/**'
+      - '.github/workflows/i18n-auto-translate.yml'
+  schedule:
+    - cron: '15 3 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: i18n-auto-translate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    if: github.event_name == 'pull_request'
+    name: Check Missing Translations
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run i18n check
+        run: |
+          python tools/i18n/sync_translations.py \
+            --mode check \
+            --config .github/i18n/config.yml \
+            --report-json build/i18n/report.json \
+            --report-md build/i18n/report.md
+
+      - name: Publish check summary
+        run: cat build/i18n/report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload check artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: i18n-check-report
+          path: build/i18n/
+          retention-days: 7
+
+  apply:
+    if: github.event_name != 'pull_request'
+    name: Generate Translations
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      models: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run i18n apply
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python tools/i18n/sync_translations.py \
+            --mode apply \
+            --config .github/i18n/config.yml \
+            --report-json build/i18n/report.json \
+            --report-md build/i18n/report.md
+
+      - name: Publish apply summary
+        run: cat build/i18n/report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Detect generated changes
+        id: changes
+        run: |
+          if git diff --quiet; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create or update translation PR
+        if: steps.changes.outputs.has_changes == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: chore(i18n): automated translation updates
+          branch: automation/i18n-translations
+          title: chore(i18n): automated translation updates
+          body: |
+            ## Automated i18n Translation Update
+
+            This PR was generated automatically by the i18n workflow.
+
+            ### What changed
+            - Added only missing keys to locale files (`values-es`, `values-fr`, `values-de`, `values-it`)
+            - Preserved existing translations
+            - Enforced placeholder parity checks (e.g. `%1$s`, `%1$d`)
+
+            ### Review checklist
+            - [ ] Spot-check high-visibility UI strings for natural phrasing
+            - [ ] Verify placeholders and punctuation look correct in context
+            - [ ] Merge when acceptable
+          labels: i18n,automated
+          delete-branch: false
+
+      - name: Upload apply artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: i18n-apply-report
+          path: build/i18n/
+          retention-days: 7
