@@ -96,6 +96,8 @@ kotlin {
         commonTest {
             dependencies {
                 implementation(libs.kotlin.test)
+                implementation(libs.org.orbit.mvi.test)
+                implementation(libs.org.jetbrains.kotlinx.coroutines.test)
             }
         }
 
