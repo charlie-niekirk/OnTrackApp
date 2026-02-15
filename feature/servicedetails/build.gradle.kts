@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
@@ -17,6 +19,10 @@ kotlin {
         namespace = "me.cniekirk.ontrackapp.feature.servicedetails"
         compileSdk = 36
         minSdk = 28
+
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_11)
+        }
 
         withHostTestBuilder {
         }
