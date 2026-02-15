@@ -6,6 +6,7 @@ import me.cniekirk.ontrackapp.core.domain.model.arguments.TrainStation
 import me.cniekirk.ontrackapp.core.domain.model.servicedetails.Location
 import me.cniekirk.ontrackapp.core.domain.model.services.Platform
 import me.cniekirk.ontrackapp.core.domain.model.services.TimeStatus
+import me.cniekirk.ontrackapp.feature.servicedetails.state.TimelineRowStateMapper
 
 class TimelineRowStateMapperTest {
 

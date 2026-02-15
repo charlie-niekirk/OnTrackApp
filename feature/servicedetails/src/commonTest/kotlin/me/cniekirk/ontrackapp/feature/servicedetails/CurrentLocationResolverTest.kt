@@ -7,6 +7,8 @@ import me.cniekirk.ontrackapp.core.domain.model.servicedetails.Location
 import me.cniekirk.ontrackapp.core.domain.model.services.Platform
 import me.cniekirk.ontrackapp.core.domain.model.services.ServiceLocation
 import me.cniekirk.ontrackapp.core.domain.model.services.TimeStatus
+import me.cniekirk.ontrackapp.feature.servicedetails.state.CurrentLocationResolver
+import me.cniekirk.ontrackapp.feature.servicedetails.state.ServiceCurrentLocation
 
 class CurrentLocationResolverTest {
 

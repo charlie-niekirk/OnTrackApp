@@ -1,4 +1,4 @@
-package me.cniekirk.ontrackapp.feature.servicedetails
+package me.cniekirk.ontrackapp.feature.servicedetails.state
 
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime

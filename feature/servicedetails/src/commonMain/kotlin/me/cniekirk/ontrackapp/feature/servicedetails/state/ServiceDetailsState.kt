@@ -1,4 +1,4 @@
-package me.cniekirk.ontrackapp.feature.servicedetails
+package me.cniekirk.ontrackapp.feature.servicedetails.state
 
 import me.cniekirk.ontrackapp.core.domain.model.arguments.TrainStation
 

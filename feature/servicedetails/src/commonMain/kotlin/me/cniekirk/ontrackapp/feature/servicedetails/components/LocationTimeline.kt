@@ -35,8 +35,8 @@ import me.cniekirk.ontrackapp.core.domain.model.servicedetails.Location
 import me.cniekirk.ontrackapp.core.domain.model.services.Platform
 import me.cniekirk.ontrackapp.core.domain.model.services.ServiceLocation
 import me.cniekirk.ontrackapp.core.domain.model.services.TimeStatus
-import me.cniekirk.ontrackapp.feature.servicedetails.TimelineMarker
-import me.cniekirk.ontrackapp.feature.servicedetails.TimelineRowState
+import me.cniekirk.ontrackapp.feature.servicedetails.state.TimelineMarker
+import me.cniekirk.ontrackapp.feature.servicedetails.state.TimelineRowState
 import ontrackapp.feature.servicedetails.generated.resources.Res
 import ontrackapp.feature.servicedetails.generated.resources.arrived_time
 import ontrackapp.feature.servicedetails.generated.resources.cancelled
