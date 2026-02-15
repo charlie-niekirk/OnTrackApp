@@ -30,6 +30,7 @@ coroutines = "1.10.2"
 kotlinx-datetime = "0.7.1"
 datastore = "1.2.0"
 okio = "3.16.4"
+mockk = "1.14.9"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -62,7 +63,7 @@ org-jetbrains-compose-material3 = { module = "org.jetbrains.compose.material3:ma
 org-jetbrains-compose-ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref ="jetbrainsCompose" }
 org-jetbrains-compose-ui-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "jetbrainsCompose" }
 org-jetbrains-compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref ="jetbrainsCompose" }
-org-jetbrains-compose-material-icons-core = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "materialIcons" }
+org-jetbrains-compose-material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "materialIcons" }
 
 org-jetbrains-navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "multiplatform-nav3-ui" }
 org-jetbrains-lifecycle-viewmodel-navigation3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "compose-multiplatform-lifecycle" }
@@ -92,6 +93,8 @@ co-touchlab-kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 
 androidx-datastore-core-okio = { group = "androidx.datastore", name = "datastore-core-okio", version.ref = "datastore" }
 squareup-okio = { group = "com.squareup.okio", name = "okio", version.ref = "okio" }
+
+io-mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

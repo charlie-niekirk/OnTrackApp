@@ -27,6 +27,7 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = true
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
@@ -48,7 +49,7 @@ dependencies {
     implementation(libs.org.jetbrains.compose.ui)
     implementation(libs.org.jetbrains.compose.foundation)
     implementation(libs.org.jetbrains.compose.material3)
-    implementation(libs.org.jetbrains.compose.material.icons.core)
+    implementation(libs.org.jetbrains.compose.material.icons.extended)
     implementation(libs.androidx.datastore.core.okio)
 
     implementation(libs.dev.zacsweers.metrox.android)

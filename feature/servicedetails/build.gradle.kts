@@ -68,7 +68,7 @@ kotlin {
                 implementation(libs.org.jetbrains.compose.foundation)
                 implementation(libs.org.jetbrains.compose.animation)
                 implementation(libs.org.jetbrains.compose.material3)
-                implementation(libs.org.jetbrains.compose.material.icons.core)
+                implementation(libs.org.jetbrains.compose.material.icons.extended)
                 implementation(libs.org.jetbrains.compose.ui.tooling.preview)
                 implementation(libs.org.jetbrains.compose.components.resources)
 
@@ -92,6 +92,7 @@ kotlin {
         commonTest {
             dependencies {
                 implementation(libs.kotlin.test)
+                implementation(libs.org.orbit.mvi.test)
             }
         }
 
