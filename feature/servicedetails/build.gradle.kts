@@ -26,6 +26,8 @@ kotlin {
         }.configure {
             instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
+
+        experimentalProperties["android.experimental.kmp.enableAndroidResources"] = true
     }
 
     // For iOS targets, this is also where you should
@@ -76,6 +78,7 @@ kotlin {
                 implementation(libs.org.orbit.mvi.core)
                 implementation(libs.org.orbit.mvi.compose)
                 implementation(libs.org.orbit.mvi.viewmodel)
+                implementation(libs.org.jetbrains.kotlinx.datetime)
 
                 implementation(libs.dev.zacsweers.metrox.viewmodel)
                 implementation(libs.dev.zacsweers.metrox.viewmodel.compose)
@@ -119,4 +122,9 @@ kotlin {
         }
     }
 
+}
+
+dependencies {
+    androidRuntimeClasspath(libs.org.jetbrains.compose.ui.tooling)
+    androidRuntimeClasspath(libs.org.jetbrains.compose.components.resources)
 }

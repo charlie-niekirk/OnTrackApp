@@ -196,7 +196,8 @@ class RealTimeTrainsRepositoryImpl(
                 platformName = "TBC",
                 isChanged = false
             ),
-            serviceLocation = serviceLocation?.toDomainModel()
+            serviceLocation = serviceLocation?.toDomainModel(),
+            crs = crs
         )
     }
 

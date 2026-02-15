@@ -19,20 +19,43 @@ class ServiceDetailsViewModel(
     private val realtimeTrainsRepository: RealtimeTrainsRepository
 ) : ViewModel(), ContainerHost<ServiceDetailsState, ServiceDetailsEffect> {
 
-    override val container = container<ServiceDetailsState, ServiceDetailsEffect>(ServiceDetailsState()) {
+    override val container = container<ServiceDetailsState, ServiceDetailsEffect>(
+        ServiceDetailsState(
+            targetStation = serviceDetailsRequest.targetStation,
+            filterStation = serviceDetailsRequest.filterStation
+        )
+    ) {
         fetchServiceDetails()
     }
 
     fun fetchServiceDetails() = intent {
+        reduce { state.copy(isLoading = true) }
+
         realtimeTrainsRepository.getServiceDetails(
             serviceDetailsRequest.serviceUid,
             serviceDetailsRequest.year,
             serviceDetailsRequest.month,
             serviceDetailsRequest.day
-        ).onSuccess {
-
+        ).onSuccess { serviceDetails ->
+            val currentLocation = CurrentLocationResolver.resolve(serviceDetails.locations)
+            reduce {
+                state.copy(
+                    isLoading = false,
+                    origin = serviceDetails.origin,
+                    destination = serviceDetails.destination,
+                    currentLocation = currentLocation,
+                    trainOperatingCompany = serviceDetails.trainOperatingCompany,
+                    timelineRows = TimelineRowStateMapper.map(
+                        locations = serviceDetails.locations,
+                        currentLocation = currentLocation,
+                        targetStation = serviceDetailsRequest.targetStation,
+                        filterStation = serviceDetailsRequest.filterStation
+                    )
+                )
+            }
         }.onFailure {
-
+            reduce { state.copy(isLoading = false) }
+            postSideEffect(ServiceDetailsEffect.DisplayError)
         }
     }
 

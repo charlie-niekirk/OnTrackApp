@@ -19,6 +19,7 @@ import me.cniekirk.ontrackapp.core.common.navigation.LocalResultEventBus
 import me.cniekirk.ontrackapp.core.common.navigation.ResultEventBus
 import me.cniekirk.ontrackapp.feature.home.navigation.Home
 import me.cniekirk.ontrackapp.feature.home.navigation.home
+import me.cniekirk.ontrackapp.feature.servicedetails.navigation.ServiceDetails
 import me.cniekirk.ontrackapp.feature.servicedetails.navigation.serviceDetails
 import me.cniekirk.ontrackapp.feature.servicelist.navigation.ServiceList
 import me.cniekirk.ontrackapp.feature.servicelist.navigation.serviceList
@@ -60,7 +61,8 @@ fun SearchTabNavigation(modifier: Modifier = Modifier) {
                     resultEventBus.sendResult<StationResult>(result = stationResult)
                     backStack.removeLastOrNull()
                 }
-                serviceList {
+                serviceList { serviceDetailRequest ->
+                    backStack.add(ServiceDetails(serviceDetailRequest))
                 }
 
                 serviceDetails()
