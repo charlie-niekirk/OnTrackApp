@@ -40,7 +40,7 @@ kotlin {
             implementation(libs.org.jetbrains.compose.foundation)
             implementation(libs.org.jetbrains.compose.animation)
             implementation(libs.org.jetbrains.compose.material3)
-            implementation(libs.org.jetbrains.compose.material.icons.core)
+            implementation(libs.org.jetbrains.compose.material.icons.extended)
             implementation(libs.org.jetbrains.compose.ui.tooling.preview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
@@ -64,6 +64,7 @@ kotlin {
             api(projects.feature.home)
             api(projects.feature.stationsearch)
             api(projects.feature.servicelist)
+            api(projects.feature.servicedetails)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

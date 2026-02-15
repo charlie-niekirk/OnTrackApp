@@ -11,6 +11,7 @@
     <string name="departing_prefix">Departing</string>
     <string name="arriving_prefix">Arriving</string>
 
+    <string name="request_time_title">When</string>
     <string name="now_departure_time">Today, now</string>
     <string name="set_departure_time">%1$s/%2$s/%3$s at %4$s:%5$s</string>
 

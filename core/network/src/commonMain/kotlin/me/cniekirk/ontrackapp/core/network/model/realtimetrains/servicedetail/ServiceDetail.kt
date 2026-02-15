@@ -13,7 +13,7 @@ data class ServiceDetail(
     @SerialName("serviceType") val serviceType: ServiceType,
     @SerialName("isPassenger") val isPassenger: Boolean,
     @SerialName("trainIdentity") val trainIdentity: String? = null,
-    @SerialName("powerType") val powerType: String? = null,
+    @SerialName("powerType") val powerType: PowerType = PowerType.UNKNOWN,
     @SerialName("trainClass") val trainClass: String? = null,
     @SerialName("sleeper") val sleeper: String? = null,
     @SerialName("atocName") val atocName: String = "Unknown",

@@ -73,12 +73,13 @@ kotlin {
                 implementation(libs.org.jetbrains.compose.foundation)
                 implementation(libs.org.jetbrains.compose.animation)
                 implementation(libs.org.jetbrains.compose.material3)
-                implementation(libs.org.jetbrains.compose.material.icons.core)
+                implementation(libs.org.jetbrains.compose.material.icons.extended)
                 implementation(libs.org.jetbrains.compose.ui.tooling.preview)
                 implementation(libs.org.jetbrains.compose.components.resources)
 
                 implementation(libs.org.jetbrains.navigation3.ui)
                 implementation(libs.org.jetbrains.lifecycle.viewmodel.navigation3)
+                implementation(libs.org.jetbrains.kotlinx.datetime)
 
                 implementation(libs.org.orbit.mvi.core)
                 implementation(libs.org.orbit.mvi.compose)
@@ -86,6 +87,8 @@ kotlin {
 
                 implementation(libs.dev.zacsweers.metrox.viewmodel)
                 implementation(libs.dev.zacsweers.metrox.viewmodel.compose)
+
+                implementation(libs.co.touchlab.kermit)
 
                 implementation(projects.core.domain)
                 implementation(projects.core.common)

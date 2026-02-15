@@ -8,6 +8,7 @@ import dev.zacsweers.metro.binding
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import me.cniekirk.ontrackapp.core.common.model.StationType
 import me.cniekirk.ontrackapp.core.domain.model.Station
+import me.cniekirk.ontrackapp.core.domain.model.arguments.RequestTime
 import me.cniekirk.ontrackapp.core.domain.model.arguments.ServiceListRequest
 import me.cniekirk.ontrackapp.core.domain.model.arguments.ServiceListType
 import me.cniekirk.ontrackapp.core.domain.model.arguments.TrainStation
@@ -27,6 +28,12 @@ class HomeViewModel(
     fun updateQueryType(queryType: QueryType) = intent {
         reduce {
             state.copy(queryType = queryType)
+        }
+    }
+
+    fun updateRequestTime(requestTime: RequestTime) = intent {
+        reduce {
+            state.copy(requestTime = requestTime)
         }
     }
 

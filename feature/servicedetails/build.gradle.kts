@@ -11,11 +11,12 @@ plugins {
 }
 
 kotlin {
+
     // Target declarations - add or remove as needed below. These define
     // which platforms this KMP module supports.
     // See: https://kotlinlang.org/docs/multiplatform-discover-project.html#targets
     androidLibrary {
-        namespace = "me.cniekirk.ontrackapp.feature.servicelist"
+        namespace = "me.cniekirk.ontrackapp.feature.servicedetails"
         compileSdk = 36
         minSdk = 28
 
@@ -42,7 +43,7 @@ kotlin {
     // A step-by-step guide on how to include this library in an XCode
     // project can be found here:
     // https://developer.android.com/kotlin/multiplatform/migrate
-    val xcfName = "feature:homeKit"
+    val xcfName = "feature:servicedetailsKit"
 
     iosArm64 {
         binaries.framework {
@@ -83,20 +84,21 @@ kotlin {
                 implementation(libs.org.orbit.mvi.core)
                 implementation(libs.org.orbit.mvi.compose)
                 implementation(libs.org.orbit.mvi.viewmodel)
+                implementation(libs.org.jetbrains.kotlinx.datetime)
 
                 implementation(libs.dev.zacsweers.metrox.viewmodel)
                 implementation(libs.dev.zacsweers.metrox.viewmodel.compose)
 
-                implementation(libs.co.touchlab.kermit)
-
                 implementation(projects.core.domain)
                 implementation(projects.core.common)
+                implementation(projects.core.designsystem)
             }
         }
 
         commonTest {
             dependencies {
                 implementation(libs.kotlin.test)
+                implementation(libs.org.orbit.mvi.test)
             }
         }
 

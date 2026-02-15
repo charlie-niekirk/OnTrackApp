@@ -9,5 +9,6 @@ data class Location(
     val departureTimeStatus: TimeStatus,
     val arrivalTimeStatus: TimeStatus,
     val platform: Platform,
-    val serviceLocation: ServiceLocation?
+    val serviceLocation: ServiceLocation?,
+    val crs: String? = null
 )

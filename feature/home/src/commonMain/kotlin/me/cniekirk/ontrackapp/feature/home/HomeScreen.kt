@@ -16,6 +16,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,10 +26,13 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import me.cniekirk.ontrackapp.core.common.model.StationType
 import me.cniekirk.ontrackapp.core.designsystem.theme.OnTrackTheme
+import me.cniekirk.ontrackapp.core.domain.model.arguments.RequestTime
 import me.cniekirk.ontrackapp.core.domain.model.arguments.ServiceListRequest
 import me.cniekirk.ontrackapp.core.domain.model.theme.ThemeMode
 import me.cniekirk.ontrackapp.feature.home.components.DepartingArrivingButtonGroup
+import me.cniekirk.ontrackapp.feature.home.components.HomeDateTimePickerDialog
 import me.cniekirk.ontrackapp.feature.home.components.RecentSearchesSection
+import me.cniekirk.ontrackapp.feature.home.components.RequestTimeCard
 import me.cniekirk.ontrackapp.feature.home.components.StationCard
 import me.cniekirk.ontrackapp.feature.home.preview.HomeScreenPreviewParameterProvider
 import ontrackapp.feature.home.generated.resources.Res
@@ -38,7 +44,7 @@ import ontrackapp.feature.home.generated.resources.empty_departing_station
 import ontrackapp.feature.home.generated.resources.train_times_title
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
-import org.orbitmvi.orbit.compose.collectAsState as collectAsStateOrbit
+import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
@@ -47,7 +53,7 @@ internal fun HomeScreen(
     navigateToStationSelection: (StationType) -> Unit,
     navigateToServiceList: (ServiceListRequest) -> Unit
 ) {
-    val state = viewModel.collectAsStateOrbit()
+    val state = viewModel.collectAsState()
     val recentSearches by state.value.recentSearches.collectAsState(initial = emptyList())
 
     viewModel.collectSideEffect { sideEffect ->
@@ -67,6 +73,7 @@ internal fun HomeScreen(
         onFilterStationClicked = { navigateToStationSelection(StationType.FILTER) },
         onClearTargetStationClicked = viewModel::clearTargetStation,
         onClearFilterStationClicked = viewModel::clearFilterStation,
+        onRequestTimeChanged = viewModel::updateRequestTime,
         onSearchClicked = viewModel::searchTrains,
         onRecentSearchClicked = viewModel::recentSearchClicked,
         onClearRecentSearchesClicked = viewModel::clearRecentSearches
@@ -82,10 +89,13 @@ private fun HomeScreenContent(
     onFilterStationClicked: () -> Unit,
     onClearTargetStationClicked: () -> Unit,
     onClearFilterStationClicked: () -> Unit,
+    onRequestTimeChanged: (RequestTime) -> Unit,
     onSearchClicked: () -> Unit,
     onRecentSearchClicked: (ServiceListRequest) -> Unit,
     onClearRecentSearchesClicked: () -> Unit
 ) {
+    var isDateTimePickerVisible by rememberSaveable { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -126,6 +136,11 @@ private fun HomeScreenContent(
                 .padding(vertical = 16.dp, horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            RequestTimeCard(
+                requestTime = state.requestTime,
+                onClick = { isDateTimePickerVisible = true },
+            )
+
             Spacer(modifier = Modifier.weight(1f))
 
             FilledTonalButton(
@@ -136,6 +151,16 @@ private fun HomeScreenContent(
                 )
             }
         }
+
+        HomeDateTimePickerDialog(
+            visible = isDateTimePickerVisible,
+            initialRequestTime = state.requestTime,
+            onDismissRequest = { isDateTimePickerVisible = false },
+            onConfirmRequestTime = { selectedRequestTime ->
+                onRequestTimeChanged(selectedRequestTime)
+                isDateTimePickerVisible = false
+            }
+        )
 
         RecentSearchesSection(
             recentSearches = recentSearches,
@@ -180,6 +205,7 @@ private fun HomeScreenPreview(
                 onFilterStationClicked = {},
                 onClearTargetStationClicked = {},
                 onClearFilterStationClicked = {},
+                onRequestTimeChanged = {},
                 onSearchClicked = {},
                 onRecentSearchClicked = {},
                 onClearRecentSearchesClicked = {},
