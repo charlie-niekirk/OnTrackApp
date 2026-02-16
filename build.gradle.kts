@@ -18,3 +18,10 @@ plugins {
     alias(libs.plugins.androidLint) apply false
     alias(libs.plugins.jetbrains.kotlin.jvm) apply false
 }
+
+listOf(
+    ":core",
+    ":feature",
+).forEach { path ->
+    project(path).pluginManager.apply("base")
+}
