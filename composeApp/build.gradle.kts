@@ -1,38 +1,17 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidKotlinMultiplatformLibrary)
-    alias(libs.plugins.composeMultiplatform)
-    alias(libs.plugins.composeCompiler)
+    id("ontrack.kmp.base")
+    id("ontrack.kmp.compose")
     alias(libs.plugins.kotlinSerialization)
     id("dev.zacsweers.metro")
 }
 
+onTrackKmp {
+    namespace = "me.cniekirk.ontrackapp"
+    frameworkBaseName = "ComposeApp"
+    staticFramework = true
+}
+
 kotlin {
-    androidLibrary {
-        namespace = "me.cniekirk.ontrackapp"
-        compileSdk = libs.versions.android.compileSdk.get().toInt()
-        minSdk = libs.versions.android.minSdk.get().toInt()
-
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
-        }
-
-        // Required while Android resources support for KMP remains experimental.
-        experimentalProperties["android.experimental.kmp.enableAndroidResources"] = true
-    }
-
-    listOf(
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "ComposeApp"
-            isStatic = true
-        }
-    }
-    
     sourceSets {
         commonMain.dependencies {
             implementation(libs.org.jetbrains.compose.runtime)
@@ -53,7 +32,6 @@ kotlin {
             implementation(libs.dev.zacsweers.metrox.viewmodel)
             implementation(libs.dev.zacsweers.metrox.viewmodel.compose)
 
-            // Expose for :androidApp module
             api(projects.core.common)
             api(projects.core.data)
             api(projects.core.domain)
@@ -70,9 +48,4 @@ kotlin {
             implementation(libs.kotlin.test)
         }
     }
-}
-
-dependencies {
-    androidRuntimeClasspath(libs.org.jetbrains.compose.ui.tooling)
-    androidRuntimeClasspath(libs.org.jetbrains.compose.components.resources)
 }

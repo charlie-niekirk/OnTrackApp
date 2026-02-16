@@ -1,50 +1,14 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidKotlinMultiplatformLibrary)
-    alias(libs.plugins.androidLint)
-    kotlin("plugin.compose")
-    id("org.jetbrains.compose")
+    id("ontrack.kmp.base.lint")
+    id("ontrack.kmp.compose")
+}
+
+onTrackKmp {
+    namespace = "me.cniekirk.ontrackapp.core.designsystem"
+    frameworkBaseName = "core:designsystemKit"
 }
 
 kotlin {
-    androidLibrary {
-        namespace = "me.cniekirk.ontrackapp.core.designsystem"
-        compileSdk = 36
-        minSdk = 28
-
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
-        }
-
-        withHostTestBuilder {
-        }
-
-        withDeviceTestBuilder {
-            sourceSetTreeName = "test"
-        }.configure {
-            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        }
-
-        // Required while Android resources support for KMP remains experimental.
-        experimentalProperties["android.experimental.kmp.enableAndroidResources"] = true
-    }
-
-    val xcfName = "core:designsystemKit"
-
-    iosArm64 {
-        binaries.framework {
-            baseName = xcfName
-        }
-    }
-
-    iosSimulatorArm64 {
-        binaries.framework {
-            baseName = xcfName
-        }
-    }
-
     sourceSets {
         commonMain {
             dependencies {
@@ -84,9 +48,4 @@ kotlin {
             }
         }
     }
-}
-
-dependencies {
-    androidRuntimeClasspath(libs.org.jetbrains.compose.ui.tooling)
-    androidRuntimeClasspath(libs.org.jetbrains.compose.components.resources)
 }

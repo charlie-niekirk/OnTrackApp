@@ -1,47 +1,15 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidKotlinMultiplatformLibrary)
-    alias(libs.plugins.androidLint)
+    id("ontrack.kmp.base.lint")
     alias(libs.plugins.kotlinSerialization)
     id("dev.zacsweers.metro")
 }
 
+onTrackKmp {
+    namespace = "me.cniekirk.ontrackapp.core.datastore"
+    frameworkBaseName = "core:datastoreKit"
+}
+
 kotlin {
-    androidLibrary {
-        namespace = "me.cniekirk.ontrackapp.core.datastore"
-        compileSdk = 36
-        minSdk = 28
-
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
-        }
-
-        withHostTestBuilder {
-        }
-
-        withDeviceTestBuilder {
-            sourceSetTreeName = "test"
-        }.configure {
-            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        }
-    }
-
-    val xcfName = "core:datastoreKit"
-
-    iosArm64 {
-        binaries.framework {
-            baseName = xcfName
-        }
-    }
-
-    iosSimulatorArm64 {
-        binaries.framework {
-            baseName = xcfName
-        }
-    }
-
     sourceSets {
         commonMain {
             dependencies {

@@ -12,6 +12,27 @@ This is a Kotlin Multiplatform project targeting Android, iOS.
 * [/iosApp](./iosApp/iosApp) contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform,
   you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
 
+### Build Logic
+
+This project uses binary class-based convention plugins from [`/build-logic`](./build-logic).
+
+Plugin IDs:
+- `ontrack.kmp.base`
+- `ontrack.kmp.base.lint`
+- `ontrack.kmp.compose`
+- `ontrack.android.application`
+
+`onTrackKmp` fields:
+- `namespace` (required)
+- `frameworkBaseName` (required)
+- `staticFramework` (optional, defaults to `false`)
+
+How to choose:
+- Use `ontrack.kmp.base.lint` for KMP modules that do not need Compose resources/tooling runtime classpath wiring.
+- Add `ontrack.kmp.compose` for KMP modules that use Compose resources/UI.
+- Use `ontrack.kmp.base` (without lint) only when lint wiring is intentionally omitted.
+- Use `ontrack.android.application` for Android app modules to share Java/Kotlin toolchain and packaging defaults.
+
 ### Build and Run Android Application
 
 To build and run the development version of the Android app, use the run configuration from the run widget
