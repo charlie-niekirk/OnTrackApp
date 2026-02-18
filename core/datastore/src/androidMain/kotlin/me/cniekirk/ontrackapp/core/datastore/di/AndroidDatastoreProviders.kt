@@ -9,17 +9,34 @@ import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
 import me.cniekirk.ontrackapp.core.common.di.ApplicationContext
+import me.cniekirk.ontrackapp.core.datastore.PINNED_SERVICES_FILE_NAME
 import me.cniekirk.ontrackapp.core.datastore.RECENT_SEARCHES_FILE_NAME
 import me.cniekirk.ontrackapp.core.datastore.THEME_PREFERENCES_FILE_NAME
 import me.cniekirk.ontrackapp.core.datastore.getDataStorePathWithContext
+import me.cniekirk.ontrackapp.core.datastore.model.PinnedServices
 import me.cniekirk.ontrackapp.core.datastore.model.RecentSearches
 import me.cniekirk.ontrackapp.core.datastore.model.ThemePreferences
+import me.cniekirk.ontrackapp.core.datastore.serializer.PinnedServicesSerializer
 import me.cniekirk.ontrackapp.core.datastore.serializer.RecentSearchesSerializer
 import me.cniekirk.ontrackapp.core.datastore.serializer.ThemePreferencesSerializer
 import okio.FileSystem
 
 @BindingContainer(includes = [CommonDatastoreProviders::class])
 object AndroidDatastoreProviders {
+
+    @Provides
+    @SingleIn(AppScope::class)
+    fun providePinnedServicesDataStore(
+        @ApplicationContext context: Context
+    ): DataStore<PinnedServices> {
+        return DataStoreFactory.create(
+            storage = OkioStorage(
+                fileSystem = FileSystem.SYSTEM,
+                serializer = PinnedServicesSerializer,
+                producePath = { getDataStorePathWithContext(context, PINNED_SERVICES_FILE_NAME) }
+            )
+        )
+    }
 
     @Provides
     @SingleIn(AppScope::class)

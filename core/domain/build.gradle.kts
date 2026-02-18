@@ -1,6 +1,7 @@
 plugins {
     id("ontrack.kmp.base.lint")
     alias(libs.plugins.kotlinSerialization)
+    id("dev.zacsweers.metro")
 }
 
 onTrackKmp {

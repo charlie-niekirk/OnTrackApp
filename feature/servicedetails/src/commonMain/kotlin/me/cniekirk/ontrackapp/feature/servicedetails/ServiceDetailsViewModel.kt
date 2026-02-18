@@ -1,6 +1,7 @@
 package me.cniekirk.ontrackapp.feature.servicedetails
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
@@ -8,8 +9,15 @@ import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import me.cniekirk.ontrackapp.core.domain.model.arguments.ServiceDetailRequest
+import me.cniekirk.ontrackapp.core.domain.model.arguments.TrainStation
+import me.cniekirk.ontrackapp.core.domain.repository.PinnedServicesRepository
 import me.cniekirk.ontrackapp.core.domain.repository.RealtimeTrainsRepository
+import me.cniekirk.ontrackapp.core.domain.usecase.PinServiceUseCase
+import me.cniekirk.ontrackapp.core.domain.usecase.UnpinServiceUseCase
 import me.cniekirk.ontrackapp.feature.servicedetails.state.CurrentLocationResolver
 import me.cniekirk.ontrackapp.feature.servicedetails.state.ServiceDetailsEffect
 import me.cniekirk.ontrackapp.feature.servicedetails.state.ServiceDetailsState
@@ -20,16 +28,55 @@ import org.orbitmvi.orbit.viewmodel.container
 @AssistedInject
 class ServiceDetailsViewModel(
     @Assisted private val serviceDetailsRequest: ServiceDetailRequest,
-    private val realtimeTrainsRepository: RealtimeTrainsRepository
+    @Assisted("targetStation") private val targetStation: TrainStation?,
+    @Assisted("filterStation") private val filterStation: TrainStation?,
+    private val realtimeTrainsRepository: RealtimeTrainsRepository,
+    private val pinnedServicesRepository: PinnedServicesRepository,
+    private val pinServiceUseCase: PinServiceUseCase,
+    private val unpinServiceUseCase: UnpinServiceUseCase
 ) : ViewModel(), ContainerHost<ServiceDetailsState, ServiceDetailsEffect> {
 
     override val container = container<ServiceDetailsState, ServiceDetailsEffect>(
         ServiceDetailsState(
-            targetStation = serviceDetailsRequest.targetStation,
-            filterStation = serviceDetailsRequest.filterStation
+            targetStation = targetStation,
+            filterStation = filterStation
         )
     ) {
         fetchServiceDetails()
+        observePinnedState()
+    }
+
+    fun togglePinState() = intent {
+        val pinResult = if (state.isPinned) {
+            unpinServiceUseCase(serviceDetailsRequest)
+        } else {
+            pinServiceUseCase(
+                origin = state.origin,
+                destination = state.destination,
+                trainOperatingCompany = state.trainOperatingCompany,
+                scheduledArrivalTime = state.scheduledArrivalTime,
+                serviceDetailRequest = serviceDetailsRequest
+            )
+        }
+
+        pinResult.onFailure {
+            postSideEffect(ServiceDetailsEffect.DisplayError)
+        }
+    }
+
+    private fun observePinnedState() {
+        viewModelScope.launch {
+            pinnedServicesRepository.pinnedServices
+                .map { pinnedServices ->
+                    pinnedServices.any { it.serviceDetailRequest == serviceDetailsRequest }
+                }
+                .distinctUntilChanged()
+                .collect { isPinned ->
+                    intent {
+                        reduce { state.copy(isPinned = isPinned) }
+                    }
+                }
+        }
     }
 
     fun fetchServiceDetails() = intent {
@@ -42,6 +89,7 @@ class ServiceDetailsViewModel(
             serviceDetailsRequest.day
         ).onSuccess { serviceDetails ->
             val currentLocation = CurrentLocationResolver.resolve(serviceDetails.locations)
+
             reduce {
                 state.copy(
                     isLoading = false,
@@ -52,9 +100,10 @@ class ServiceDetailsViewModel(
                     timelineRows = TimelineRowStateMapper.map(
                         locations = serviceDetails.locations,
                         currentLocation = currentLocation,
-                        targetStation = serviceDetailsRequest.targetStation,
-                        filterStation = serviceDetailsRequest.filterStation
-                    )
+                        targetStation = targetStation,
+                        filterStation = filterStation
+                    ),
+                    scheduledArrivalTime = serviceDetails.scheduledArrivalTime
                 )
             }
         }.onFailure {
@@ -67,6 +116,10 @@ class ServiceDetailsViewModel(
     @ManualViewModelAssistedFactoryKey(Factory::class)
     @ContributesIntoMap(AppScope::class)
     interface Factory : ManualViewModelAssistedFactory {
-        fun create(serviceDetailsRequest: ServiceDetailRequest): ServiceDetailsViewModel
+        fun create(
+            serviceDetailsRequest: ServiceDetailRequest,
+            @Assisted("targetStation") targetStation: TrainStation?,
+            @Assisted("filterStation") filterStation: TrainStation?
+        ): ServiceDetailsViewModel
     }
 }

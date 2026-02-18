@@ -7,9 +7,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.ToggleButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -28,6 +31,10 @@ import me.cniekirk.ontrackapp.feature.servicedetails.state.ServiceCurrentLocatio
 import me.cniekirk.ontrackapp.feature.servicedetails.state.ServiceDetailsEffect
 import me.cniekirk.ontrackapp.feature.servicedetails.state.ServiceDetailsState
 import me.cniekirk.ontrackapp.feature.servicedetails.state.TimelineRowStateMapper
+import ontrackapp.feature.servicedetails.generated.resources.Res
+import ontrackapp.feature.servicedetails.generated.resources.pin_service
+import ontrackapp.feature.servicedetails.generated.resources.unpin_service
+import org.jetbrains.compose.resources.stringResource
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 
@@ -41,11 +48,18 @@ internal fun ServiceDetailsRoute(viewModel: ServiceDetailsViewModel) {
         }
     }
 
-    ServiceDetailsScreen(state.value)
+    ServiceDetailsScreen(
+        state = state.value,
+        onPinStateToggled = viewModel::togglePinState
+    )
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun ServiceDetailsScreen(state: ServiceDetailsState) {
+private fun ServiceDetailsScreen(
+    state: ServiceDetailsState,
+    onPinStateToggled: () -> Unit
+) {
     val timelineListState = rememberLazyListState()
     val currentLocationRowIndex = when (val currentLocation = state.currentLocation) {
         is ServiceCurrentLocation.AtStation -> currentLocation.index
@@ -71,6 +85,20 @@ private fun ServiceDetailsScreen(state: ServiceDetailsState) {
                 destination = state.destination,
                 trainOperatingCompany = state.trainOperatingCompany
             )
+
+            ToggleButton(
+                modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp),
+                checked = state.isPinned,
+                onCheckedChange = { onPinStateToggled() }
+            ) {
+                val toggleText = if (state.isPinned) {
+                    stringResource(Res.string.unpin_service)
+                } else {
+                    stringResource(Res.string.pin_service)
+                }
+
+                Text(text = toggleText)
+            }
 
             if (state.isLoading) {
                 Box(
@@ -137,7 +165,10 @@ private fun ServiceDetailsScreenPreview() {
 
     OnTrackTheme(themeMode = ThemeMode.SYSTEM) {
         Surface {
-            ServiceDetailsScreen(state = state)
+            ServiceDetailsScreen(
+                state = state,
+                onPinStateToggled = {}
+            )
         }
     }
 }

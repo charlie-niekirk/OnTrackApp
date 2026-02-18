@@ -1,0 +1,8 @@
+<resources>
+    <string name="pinned_title">Pinned services</string>
+    <string name="pinned_empty">No pinned services yet.</string>
+
+    <string name="pinned_route">%1$s to %2$s</string>
+    <string name="scheduled_arrival">Scheduled arrival: %1$s</string>
+    <string name="pinned_operator">%1$s</string>
+</resources>

@@ -16,6 +16,7 @@ import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,6 +28,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import me.cniekirk.ontrackapp.core.domain.model.arguments.ServiceDetailRequest
 import me.cniekirk.ontrackapp.core.domain.model.arguments.ServiceListType
+import me.cniekirk.ontrackapp.core.domain.model.arguments.TrainStation
 import me.cniekirk.ontrackapp.core.domain.model.services.Platform
 import me.cniekirk.ontrackapp.core.domain.model.services.ServiceLocation
 import me.cniekirk.ontrackapp.core.domain.model.services.TimeStatus
@@ -55,7 +57,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 @Composable
 internal fun ServiceListRoute(
     viewModel: ServiceListViewModel,
-    serviceClicked: (ServiceDetailRequest) -> Unit
+    serviceClicked: (ServiceDetailRequest, TrainStation, TrainStation?) -> Unit
 ) {
     val state by viewModel.collectAsState()
 
@@ -65,14 +67,19 @@ internal fun ServiceListRoute(
 
             }
             is ServiceListEffect.NavigateToServiceDetails -> {
-                serviceClicked(sideEffect.serviceDetailRequest)
+                serviceClicked(
+                    sideEffect.serviceDetailRequest,
+                    sideEffect.targetStation,
+                    sideEffect.filterStation
+                )
             }
         }
     }
 
     ServiceListScreen(
         state = state,
-        serviceClicked = viewModel::serviceSelected
+        serviceClicked = viewModel::serviceSelected,
+        refreshTrainList = viewModel::getTrainList
     )
 }
 
@@ -80,7 +87,8 @@ internal fun ServiceListRoute(
 @Composable
 private fun ServiceListScreen(
     state: ServiceListState,
-    serviceClicked: (String) -> Unit
+    serviceClicked: (String) -> Unit,
+    refreshTrainList: () -> Unit
 ) {
     Scaffold(
         modifier = Modifier
@@ -139,20 +147,27 @@ private fun ServiceListScreen(
                     .fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
-                if (state.isLoading) {
+                if (state.isLoading && state.trainServiceList.isEmpty()) {
                     CircularWavyProgressIndicator()
                 } else {
-                    LazyColumn(
+                    PullToRefreshBox(
                         modifier = Modifier.fillMaxSize(),
-                        contentPadding = innerPadding
+                        isRefreshing = state.isLoading,
+                        onRefresh = refreshTrainList
                     ) {
-                        items(state.trainServiceList) { trainService ->
-                            TrainServiceListItem(
-                                trainService = trainService,
-                                serviceListType = state.serviceListType,
-                                onServiceClicked = { serviceClicked(it) }
-                            )
-                            HorizontalDivider()
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = innerPadding
+                        ) {
+                            items(state.trainServiceList, key = { service -> service.serviceId }) { trainService ->
+                                TrainServiceListItem(
+                                    modifier = Modifier.animateItem(),
+                                    trainService = trainService,
+                                    serviceListType = state.serviceListType,
+                                    onServiceClicked = { serviceClicked(it) }
+                                )
+                                HorizontalDivider()
+                            }
                         }
                     }
                 }
