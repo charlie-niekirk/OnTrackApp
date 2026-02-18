@@ -15,4 +15,7 @@
 
     <string name="confirmed_platform">Platform %1$s</string>
     <string name="estimated_platform">Platform %1$s (est)</string>
+    <string name="pin_service">Pin service</string>
+    <string name="unpin_service">Unpin service</string>
+    <string name="pinned_service">Pinned service</string>
 </resources>

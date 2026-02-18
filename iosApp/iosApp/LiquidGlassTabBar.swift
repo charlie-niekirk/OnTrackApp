@@ -70,10 +70,10 @@ struct MainTabView: View {
                 }
                 .tag(0)
 
-            FavouritesTabView()
+            PinnedTabView()
                 .ignoresSafeArea()
                 .tabItem {
-                    Label("Favourites", systemImage: "heart.fill")
+                    Label("Pinned", systemImage: "pin.fill")
                 }
                 .tag(1)
 
@@ -97,9 +97,9 @@ struct SearchTabView: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
 }
 
-struct FavouritesTabView: UIViewControllerRepresentable {
+struct PinnedTabView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIViewController {
-        TabViewControllersKt.FavouritesTabViewController()
+        TabViewControllersKt.PinnedTabViewController()
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}

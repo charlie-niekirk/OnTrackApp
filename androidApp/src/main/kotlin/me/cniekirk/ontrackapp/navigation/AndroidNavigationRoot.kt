@@ -46,7 +46,7 @@ fun AndroidNavigationRoot(
                             .consumeWindowInsets(innerPadding)
                     )
 
-                    TopLevelDestinationKey.Favourites -> FavouritesTabContent(
+                    TopLevelDestinationKey.Pinned -> PinnedTabContent(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(innerPadding)

@@ -1,7 +1,7 @@
 package me.cniekirk.ontrackapp.navigation
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 
 enum class TopLevelDestinationKey {
     Search,
-    Favourites,
+    Pinned,
     Settings
 }
 
@@ -28,9 +28,9 @@ val TOP_LEVEL_DESTINATIONS: Map<TopLevelDestinationKey, TopLevelDestination> = l
         title = "Search",
         icon = Icons.Default.Search
     ),
-    TopLevelDestinationKey.Favourites to TopLevelDestination(
-        title = "Favourites",
-        icon = Icons.Default.Favorite
+    TopLevelDestinationKey.Pinned to TopLevelDestination(
+        title = "Pinned",
+        icon = Icons.Default.PushPin
     ),
     TopLevelDestinationKey.Settings to TopLevelDestination(
         title = "Settings",

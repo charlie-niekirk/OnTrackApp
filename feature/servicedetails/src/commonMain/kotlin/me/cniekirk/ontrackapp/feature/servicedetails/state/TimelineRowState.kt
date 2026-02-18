@@ -29,7 +29,7 @@ internal object TimelineRowStateMapper {
     fun map(
         locations: List<Location>,
         currentLocation: ServiceCurrentLocation?,
-        targetStation: TrainStation,
+        targetStation: TrainStation?,
         filterStation: TrainStation?
     ): List<TimelineRowState> {
         val emphasisRange = resolveEmphasisRange(
@@ -84,9 +84,11 @@ internal object TimelineRowStateMapper {
 
     private fun resolveEmphasisRange(
         locations: List<Location>,
-        targetStation: TrainStation,
+        targetStation: TrainStation?,
         filterStation: TrainStation?
     ): IntRange? {
+        if (targetStation == null) return null
+
         val targetIndex = findStationIndex(locations, targetStation)
         if (targetIndex == -1) return null
 

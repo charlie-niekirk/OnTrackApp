@@ -38,6 +38,10 @@ class ServiceListViewModel(
     }
 
     fun getTrainList() = intent {
+        reduce {
+            state.copy(isLoading = true)
+        }
+
         fetchTrainServices()
             .onSuccess { trainServices ->
                 reduce {
@@ -73,10 +77,10 @@ class ServiceListViewModel(
                     year = service.runDate.year,
                     month = service.runDate.month,
                     day = service.runDate.day,
-                    serviceListType = serviceListRequest.serviceListType,
-                    targetStation = serviceListRequest.targetStation,
-                    filterStation = serviceListRequest.filterStation
-                )
+                    serviceListType = serviceListRequest.serviceListType
+                ),
+                targetStation = serviceListRequest.targetStation,
+                filterStation = serviceListRequest.filterStation
             )
         )
     }

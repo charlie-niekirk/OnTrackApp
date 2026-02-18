@@ -43,6 +43,7 @@ kotlin {
             api(projects.feature.stationsearch)
             api(projects.feature.servicelist)
             api(projects.feature.servicedetails)
+            api(projects.feature.pinned)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

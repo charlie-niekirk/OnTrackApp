@@ -4,5 +4,6 @@ data class ServiceDetails(
     val trainOperatingCompany: String,
     val origin: String,
     val destination: String,
-    val locations: List<Location>
+    val locations: List<Location>,
+    val scheduledArrivalTime: String
 )

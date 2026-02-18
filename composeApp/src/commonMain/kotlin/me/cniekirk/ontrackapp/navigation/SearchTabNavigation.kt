@@ -32,6 +32,9 @@ fun SearchTabNavigation(modifier: Modifier = Modifier) {
         serializersModule = SerializersModule {
             polymorphic(NavKey::class) {
                 subclass(Home::class, Home.serializer())
+                subclass(StationSearch::class, StationSearch.serializer())
+                subclass(ServiceList::class, ServiceList.serializer())
+                subclass(ServiceDetails::class, ServiceDetails.serializer())
             }
         }
     }
@@ -61,8 +64,14 @@ fun SearchTabNavigation(modifier: Modifier = Modifier) {
                     resultEventBus.sendResult<StationResult>(result = stationResult)
                     backStack.removeLastOrNull()
                 }
-                serviceList { serviceDetailRequest ->
-                    backStack.add(ServiceDetails(serviceDetailRequest))
+                serviceList { serviceDetailRequest, targetStation, filterStation ->
+                    backStack.add(
+                        ServiceDetails(
+                            serviceDetailRequest = serviceDetailRequest,
+                            targetStation = targetStation,
+                            filterStation = filterStation
+                        )
+                    )
                 }
 
                 serviceDetails()

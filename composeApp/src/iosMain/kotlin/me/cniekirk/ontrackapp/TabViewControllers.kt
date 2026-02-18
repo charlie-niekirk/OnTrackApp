@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.ComposeUIViewController
 import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
 import me.cniekirk.ontrackapp.di.iosGraph
-import me.cniekirk.ontrackapp.navigation.FavouritesTabContent
+import me.cniekirk.ontrackapp.navigation.PinnedTabContent
 import me.cniekirk.ontrackapp.navigation.SearchTabNavigation
 import me.cniekirk.ontrackapp.navigation.SettingsTabContent
 import me.cniekirk.ontrackapp.theme.ThemeHost
@@ -29,12 +29,12 @@ fun SearchTabViewController(): UIViewController = ComposeUIViewController {
     }
 }
 
-fun FavouritesTabViewController(): UIViewController = ComposeUIViewController {
+fun PinnedTabViewController(): UIViewController = ComposeUIViewController {
     CompositionLocalProvider(
         LocalMetroViewModelFactory provides iosGraph.metroViewModelFactory
     ) {
         ThemeHost(themePreferencesRepository = iosGraph.themePreferencesRepository) { _, _ ->
-            FavouritesTabContent(
+            PinnedTabContent(
                 modifier = Modifier
                     .fillMaxSize()
                     .windowInsetsPadding(WindowInsets.statusBars)

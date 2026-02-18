@@ -183,7 +183,8 @@ class RealTimeTrainsRepositoryImpl(
             trainOperatingCompany = atocName,
             origin = origin.firstOrNull()?.description ?: "",
             destination = destination.firstOrNull()?.description ?: "",
-            locations = locations.map { it.toDomainModel() }
+            locations = locations.map { it.toDomainModel() },
+            scheduledArrivalTime = (destination.firstOrNull()?.publicTime ?: "").toReadableTime()
         )
     }
 
@@ -267,6 +268,14 @@ class RealTimeTrainsRepositoryImpl(
             ServiceLocationType.AT_PLAT -> ServiceLocation.AT_PLATFORM
             ServiceLocationType.DEP_PREP -> ServiceLocation.PREPARING_DEPARTURE
             ServiceLocationType.DEP_READY -> ServiceLocation.READY_TO_DEPART
+        }
+    }
+
+    private fun String.toReadableTime(): String {
+        return if (length == 4 && all { it.isDigit() }) {
+            "${take(2)}:${takeLast(2)}"
+        } else {
+            this
         }
     }
 }

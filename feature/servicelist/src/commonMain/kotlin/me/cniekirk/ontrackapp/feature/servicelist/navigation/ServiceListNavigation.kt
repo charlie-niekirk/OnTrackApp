@@ -6,6 +6,7 @@ import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.serialization.Serializable
 import me.cniekirk.ontrackapp.core.domain.model.arguments.ServiceDetailRequest
 import me.cniekirk.ontrackapp.core.domain.model.arguments.ServiceListRequest
+import me.cniekirk.ontrackapp.core.domain.model.arguments.TrainStation
 import me.cniekirk.ontrackapp.feature.servicelist.ServiceListRoute
 import me.cniekirk.ontrackapp.feature.servicelist.ServiceListViewModel
 
@@ -14,14 +15,16 @@ data class ServiceList(
     val serviceListRequest: ServiceListRequest
 ) : NavKey
 
-fun EntryProviderScope<NavKey>.serviceList(onServiceDetailRequest: (ServiceDetailRequest) -> Unit) {
+fun EntryProviderScope<NavKey>.serviceList(
+    onServiceDetailRequest: (ServiceDetailRequest, TrainStation, TrainStation?) -> Unit
+) {
     entry<ServiceList> { serviceList ->
         val viewModel = assistedMetroViewModel<ServiceListViewModel, ServiceListViewModel.Factory> {
             create(serviceList.serviceListRequest)
         }
 
-        ServiceListRoute(viewModel) { serviceDetailRequest ->
-            onServiceDetailRequest(serviceDetailRequest)
+        ServiceListRoute(viewModel) { serviceDetailRequest, targetStation, filterStation ->
+            onServiceDetailRequest(serviceDetailRequest, targetStation, filterStation)
         }
     }
 }
