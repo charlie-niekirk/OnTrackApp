@@ -22,14 +22,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import me.cniekirk.ontrackapp.core.domain.model.arguments.ServiceDetailRequest
 import me.cniekirk.ontrackapp.core.domain.model.pinned.PinnedService
 import ontrackapp.feature.pinned.generated.resources.Res
 import ontrackapp.feature.pinned.generated.resources.pinned_empty
 import ontrackapp.feature.pinned.generated.resources.pinned_operator
 import ontrackapp.feature.pinned.generated.resources.pinned_route
 import ontrackapp.feature.pinned.generated.resources.pinned_title
-import ontrackapp.feature.pinned.generated.resources.scheduled_arrival
 import org.jetbrains.compose.resources.stringResource
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -37,13 +35,13 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 @Composable
 internal fun PinnedRoute(
     viewModel: PinnedViewModel,
-    onServiceSelected: (ServiceDetailRequest) -> Unit
+    onServiceSelected: (PinnedService) -> Unit
 ) {
     val state by viewModel.collectAsState()
 
     viewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
-            is PinnedEffect.NavigateToServiceDetails -> onServiceSelected(sideEffect.serviceDetailRequest)
+            is PinnedEffect.NavigateToServiceDetails -> onServiceSelected(sideEffect.pinnedService)
         }
     }
 
@@ -56,7 +54,7 @@ internal fun PinnedRoute(
 @Composable
 private fun PinnedScreen(
     state: PinnedState,
-    onServiceSelected: (ServiceDetailRequest) -> Unit
+    onServiceSelected: (PinnedService) -> Unit
 ) {
     Scaffold(
         modifier = Modifier
@@ -80,25 +78,34 @@ private fun PinnedScreen(
                     .padding(bottom = 8.dp),
                 contentAlignment = Alignment.Center
             ) {
-                when {
-                    state.isLoading -> CircularProgressIndicator()
-                    state.pinnedServices.isEmpty() -> {
+                when (state) {
+                    PinnedState.Loading -> CircularProgressIndicator()
+
+                    is PinnedState.Error -> {
                         Text(
-                            text = stringResource(Res.string.pinned_empty),
-                            style = MaterialTheme.typography.bodyMedium
+                            text = "Error loading pinned services: ${state.errorType}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.error
                         )
                     }
 
-                    else -> {
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            items(state.pinnedServices) { pinnedService ->
-                                PinnedServiceListItem(
-                                    pinnedService = pinnedService,
-                                    onServiceSelected = onServiceSelected
-                                )
-                                HorizontalDivider()
+                    is PinnedState.Ready -> {
+                        if (state.pinnedServices.isEmpty()) {
+                            Text(
+                                text = stringResource(Res.string.pinned_empty),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        } else {
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                items(state.pinnedServices) { pinnedService ->
+                                    PinnedServiceListItem(
+                                        pinnedService = pinnedService,
+                                        onServiceSelected = onServiceSelected
+                                    )
+                                    HorizontalDivider()
+                                }
                             }
                         }
                     }
@@ -111,13 +118,13 @@ private fun PinnedScreen(
 @Composable
 private fun PinnedServiceListItem(
     pinnedService: PinnedService,
-    onServiceSelected: (ServiceDetailRequest) -> Unit,
+    onServiceSelected: (PinnedService) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clickable { onServiceSelected(pinnedService.serviceDetailRequest) }
+            .clickable { onServiceSelected(pinnedService) }
             .padding(horizontal = 16.dp, vertical = 12.dp),
     ) {
         Text(

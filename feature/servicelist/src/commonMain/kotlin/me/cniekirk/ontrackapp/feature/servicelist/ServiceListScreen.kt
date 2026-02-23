@@ -79,7 +79,7 @@ internal fun ServiceListRoute(
     ServiceListScreen(
         state = state,
         serviceClicked = viewModel::serviceSelected,
-        refreshTrainList = viewModel::getTrainList
+        refreshTrainList = viewModel::refreshTrainList
     )
 }
 
@@ -87,7 +87,7 @@ internal fun ServiceListRoute(
 @Composable
 private fun ServiceListScreen(
     state: ServiceListState,
-    serviceClicked: (String) -> Unit,
+    serviceClicked: (TrainService) -> Unit,
     refreshTrainList: () -> Unit
 ) {
     Scaffold(
@@ -147,26 +147,34 @@ private fun ServiceListScreen(
                     .fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
-                if (state.isLoading && state.trainServiceList.isEmpty()) {
-                    CircularWavyProgressIndicator()
-                } else {
-                    PullToRefreshBox(
-                        modifier = Modifier.fillMaxSize(),
-                        isRefreshing = state.isLoading,
-                        onRefresh = refreshTrainList
-                    ) {
-                        LazyColumn(
+                when (state) {
+                    is ServiceListState.Loading -> CircularWavyProgressIndicator()
+                    is ServiceListState.Error -> {
+                        Text(
+                            text = "Error loading services: ${state.errorType}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                    is ServiceListState.Ready -> {
+                        PullToRefreshBox(
                             modifier = Modifier.fillMaxSize(),
-                            contentPadding = innerPadding
+                            isRefreshing = state.isRefreshing,
+                            onRefresh = refreshTrainList
                         ) {
-                            items(state.trainServiceList, key = { service -> service.serviceId }) { trainService ->
-                                TrainServiceListItem(
-                                    modifier = Modifier.animateItem(),
-                                    trainService = trainService,
-                                    serviceListType = state.serviceListType,
-                                    onServiceClicked = { serviceClicked(it) }
-                                )
-                                HorizontalDivider()
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = innerPadding
+                            ) {
+                                items(state.trainServiceList, key = { service -> service.serviceId }) { trainService ->
+                                    TrainServiceListItem(
+                                        modifier = Modifier.animateItem(),
+                                        trainService = trainService,
+                                        serviceListType = state.serviceListType,
+                                        onServiceClicked = { serviceClicked(it) }
+                                    )
+                                    HorizontalDivider()
+                                }
                             }
                         }
                     }
@@ -180,14 +188,14 @@ private fun ServiceListScreen(
 private fun TrainServiceListItem(
     trainService: TrainService,
     serviceListType: ServiceListType,
-    onServiceClicked: (String) -> Unit,
+    onServiceClicked: (TrainService) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable { onServiceClicked(trainService.serviceId) },
+            .clickable { onServiceClicked(trainService) },
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         val scheduledTime = when (val time = trainService.timeStatus) {

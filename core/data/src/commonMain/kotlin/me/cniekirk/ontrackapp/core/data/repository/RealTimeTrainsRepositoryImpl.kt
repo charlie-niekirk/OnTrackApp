@@ -217,7 +217,9 @@ class RealTimeTrainsRepositoryImpl(
         val lateness = if (isDeparture) realtimeGbttDepartureLateness else realtimeGbttArrivalLateness
 
         return when {
-            scheduledTime == null -> TimeStatus.Unknown
+            scheduledTime == null -> {
+                TimeStatus.Unknown
+            }
             actualTime && realtimeTime != null -> {
                 if (isDeparture) {
                     TimeStatus.Departed(

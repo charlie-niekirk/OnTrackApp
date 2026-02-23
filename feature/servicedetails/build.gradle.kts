@@ -38,6 +38,8 @@ kotlin {
                 implementation(libs.dev.zacsweers.metrox.viewmodel)
                 implementation(libs.dev.zacsweers.metrox.viewmodel.compose)
 
+                implementation(libs.co.touchlab.kermit)
+
                 implementation(projects.core.domain)
                 implementation(projects.core.common)
                 implementation(projects.core.designsystem)

@@ -23,6 +23,5 @@ data class HomeState(
     val targetStationSelection: StationSelection = StationSelection.None,
     val filterStationSelection: StationSelection = StationSelection.None,
     val requestTime: RequestTime = RequestTime.Now,
-//    val currentDateMillis: Long,
     val recentSearches: Flow<List<ServiceListRequest>> = flowOf(emptyList())
 )

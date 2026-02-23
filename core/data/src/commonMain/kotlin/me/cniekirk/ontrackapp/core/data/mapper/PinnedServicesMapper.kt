@@ -10,6 +10,8 @@ internal fun PinnedService.toDataModel(): PinnedServiceData {
     return PinnedServiceData(
         origin = origin,
         destination = destination,
+        targetStation = targetStation,
+        filterStation = filterStation,
         trainOperatingCompany = trainOperatingCompany,
         scheduledArrivalTime = scheduledArrivalTime,
         serviceDetailRequest = serviceDetailRequest.toDataModel()
@@ -20,6 +22,8 @@ internal fun PinnedServiceData.toDomainModel(): PinnedService {
     return PinnedService(
         origin = origin,
         destination = destination,
+        targetStation = targetStation,
+        filterStation = filterStation,
         trainOperatingCompany = trainOperatingCompany,
         scheduledArrivalTime = scheduledArrivalTime,
         serviceDetailRequest = serviceDetailRequest.toDomainModel()

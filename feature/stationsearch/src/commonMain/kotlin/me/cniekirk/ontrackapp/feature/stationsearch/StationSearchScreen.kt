@@ -11,10 +11,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -22,10 +18,10 @@ import me.cniekirk.ontrackapp.core.common.model.StationResult
 import me.cniekirk.ontrackapp.core.domain.model.Station
 import me.cniekirk.ontrackapp.feature.stationsearch.components.StationList
 import ontrackapp.feature.stationsearch.generated.resources.Res
+import ontrackapp.feature.stationsearch.generated.resources.station_fetch_error
 import ontrackapp.feature.stationsearch.generated.resources.station_search_placeholder
 import org.jetbrains.compose.resources.stringResource
 import org.orbitmvi.orbit.compose.collectAsState
-import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun StationSearchScreen(
@@ -33,12 +29,6 @@ fun StationSearchScreen(
     onStationResult: (StationResult) -> Unit
 ) {
     val state = viewModel.collectAsState().value
-
-    viewModel.collectSideEffect { sideEffect ->
-        when (sideEffect) {
-            else -> {}
-        }
-    }
 
     StationSearchScreenContent(
         state = state,
@@ -66,32 +56,42 @@ private fun StationSearchScreenContent(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        if (state.isLoading) {
-            Spacer(modifier = Modifier.weight(1f))
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
-            Spacer(modifier = Modifier.weight(1f))
-        } else {
-            var searchText by remember { mutableStateOf("") }
+        when (state) {
+            is StationSearchState.Loading -> {
+                Spacer(modifier = Modifier.weight(1f))
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+                Spacer(modifier = Modifier.weight(1f))
+            }
 
-            TextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 32.dp, start = 16.dp, end = 16.dp),
-                value = searchText,
-                onValueChange = {
-                    searchText = it
-                    onQueryChanged(it)
-                },
-                placeholder = {
-                    Text(text = stringResource(Res.string.station_search_placeholder))
-                }
-            )
+            is StationSearchState.Error -> {
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    text = stringResource(Res.string.station_fetch_error),
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Spacer(modifier = Modifier.weight(1f))
+            }
 
-            StationList(
-                modifier = Modifier.padding(top = 16.dp),
-                stations = state.stations,
-                onStationClicked = onStationClicked
-            )
+            is StationSearchState.Ready -> {
+                TextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 32.dp, start = 16.dp, end = 16.dp),
+                    value = state.searchQuery,
+                    onValueChange = onQueryChanged,
+                    placeholder = {
+                        Text(text = stringResource(Res.string.station_search_placeholder))
+                    }
+                )
+
+                StationList(
+                    modifier = Modifier.padding(top = 16.dp),
+                    stations = state.stations,
+                    onStationClicked = onStationClicked
+                )
+            }
         }
     }
 }

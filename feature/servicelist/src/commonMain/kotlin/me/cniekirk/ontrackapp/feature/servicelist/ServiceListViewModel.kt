@@ -17,6 +17,7 @@ import me.cniekirk.ontrackapp.core.domain.model.services.TrainService
 import me.cniekirk.ontrackapp.core.domain.repository.RealtimeTrainsRepository
 import me.cniekirk.ontrackapp.core.domain.repository.RecentSearchesRepository
 import org.orbitmvi.orbit.ContainerHost
+import org.orbitmvi.orbit.annotation.OrbitExperimental
 import org.orbitmvi.orbit.viewmodel.container
 
 @AssistedInject
@@ -26,34 +27,61 @@ class ServiceListViewModel(
     private val recentSearchesRepository: RecentSearchesRepository
 ) : ViewModel(), ContainerHost<ServiceListState, ServiceListEffect> {
 
-    override val container = container<ServiceListState, ServiceListEffect>(
-        ServiceListState(
-            serviceListType = serviceListRequest.serviceListType,
-            targetStation = serviceListRequest.targetStation.name,
-            filterStation = serviceListRequest.filterStation?.name
-        )
-    ) {
-        getTrainList()
-        cacheRecentSearch()
+    private val loadingState = ServiceListState.Loading(
+        serviceListType = serviceListRequest.serviceListType,
+        targetStation = serviceListRequest.targetStation.name,
+        filterStation = serviceListRequest.filterStation?.name
+    )
+
+    override val container = container<ServiceListState, ServiceListEffect>(loadingState) {
+        when (state) {
+            is ServiceListState.Loading -> {
+                getTrainList()
+                cacheRecentSearch()
+            }
+            is ServiceListState.Error -> {
+
+            }
+            is ServiceListState.Ready -> Unit
+        }
     }
 
-    fun getTrainList() = intent {
-        reduce {
-            state.copy(isLoading = true)
+    fun refreshTrainList() = intent {
+        (state as? ServiceListState.Ready)?.let { readyState ->
+            reduce {
+                ServiceListState.Ready(
+                    serviceListType = serviceListRequest.serviceListType,
+                    targetStation = serviceListRequest.targetStation.name,
+                    filterStation = serviceListRequest.filterStation?.name,
+                    trainServiceList = readyState.trainServiceList,
+                    isRefreshing = true,
+                )
+            }
+            getTrainList()
         }
+    }
 
+    @OptIn(OrbitExperimental::class)
+    private suspend fun getTrainList() = subIntent {
         fetchTrainServices()
-            .onSuccess { trainServices ->
+            .onSuccess { trainServiceList ->
                 reduce {
-                    state.copy(
-                        isLoading = false,
-                        trainServiceList = trainServices
+                    ServiceListState.Ready(
+                        trainServiceList = trainServiceList,
+                        serviceListType = serviceListRequest.serviceListType,
+                        targetStation = serviceListRequest.targetStation.name,
+                        filterStation = serviceListRequest.filterStation?.name
                     )
                 }
             }
             .onFailure {
                 reduce {
-                    state.copy(isLoading = false)
+                    ServiceListState.Error(
+                        serviceListType = serviceListRequest.serviceListType,
+                        targetStation = serviceListRequest.targetStation.name,
+                        filterStation = serviceListRequest.filterStation?.name,
+                        errorType = it.message ?: "Unknown error"
+                    )
                 }
             }
     }
@@ -68,15 +96,14 @@ class ServiceListViewModel(
             }
     }
 
-    fun serviceSelected(serviceUid: String) = intent {
-        val service = state.trainServiceList.first { it.serviceId == serviceUid }
+    fun serviceSelected(trainService: TrainService) = intent {
         postSideEffect(
             ServiceListEffect.NavigateToServiceDetails(
                 serviceDetailRequest = ServiceDetailRequest(
-                    serviceUid = serviceUid,
-                    year = service.runDate.year,
-                    month = service.runDate.month,
-                    day = service.runDate.day,
+                    serviceUid = trainService.serviceId,
+                    year = trainService.runDate.year,
+                    month = trainService.runDate.month,
+                    day = trainService.runDate.day,
                     serviceListType = serviceListRequest.serviceListType
                 ),
                 targetStation = serviceListRequest.targetStation,

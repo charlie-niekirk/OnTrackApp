@@ -5,13 +5,14 @@ import androidx.navigation3.runtime.NavKey
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.serialization.Serializable
 import me.cniekirk.ontrackapp.core.domain.model.arguments.ServiceDetailRequest
+import me.cniekirk.ontrackapp.core.domain.model.pinned.PinnedService
 import me.cniekirk.ontrackapp.feature.pinned.PinnedRoute
 import me.cniekirk.ontrackapp.feature.pinned.PinnedViewModel
 
 @Serializable
 data object Pinned : NavKey
 
-fun EntryProviderScope<NavKey>.pinned(onServiceSelected: (ServiceDetailRequest) -> Unit) {
+fun EntryProviderScope<NavKey>.pinned(onServiceSelected: (PinnedService) -> Unit) {
     entry<Pinned> {
         val viewModel = metroViewModel<PinnedViewModel>()
 

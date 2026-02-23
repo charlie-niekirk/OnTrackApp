@@ -61,11 +61,15 @@ private fun ServiceDetailsScreen(
     onPinStateToggled: () -> Unit
 ) {
     val timelineListState = rememberLazyListState()
-    val currentLocationRowIndex = when (val currentLocation = state.currentLocation) {
-        is ServiceCurrentLocation.AtStation -> currentLocation.index
-        is ServiceCurrentLocation.BetweenStations -> currentLocation.fromIndex
-        null -> null
-    }?.takeIf { state.timelineRows.isNotEmpty() }?.coerceIn(0, state.timelineRows.lastIndex)
+    val readyState = state as? ServiceDetailsState.Ready
+    val currentLocationRowIndex = readyState?.let { currentState ->
+        when (val currentLocation = currentState.currentLocation) {
+            is ServiceCurrentLocation.AtStation -> currentLocation.index
+            is ServiceCurrentLocation.BetweenStations -> currentLocation.fromIndex
+            null -> null
+        }?.takeIf { currentState.timelineRows.isNotEmpty() }
+            ?.coerceIn(0, currentState.timelineRows.lastIndex)
+    }
 
     LaunchedEffect(currentLocationRowIndex) {
         currentLocationRowIndex?.let { timelineListState.animateScrollToItem(index = it) }
@@ -76,46 +80,67 @@ private fun ServiceDetailsScreen(
             .fillMaxSize()
             .background(color = MaterialTheme.colorScheme.background),
     ) { innerPadding ->
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            RouteHeader(
-                modifier = Modifier.padding(top = 16.dp),
-                origin = state.origin,
-                destination = state.destination,
-                trainOperatingCompany = state.trainOperatingCompany
-            )
-
-            ToggleButton(
-                modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp),
-                checked = state.isPinned,
-                onCheckedChange = { onPinStateToggled() }
-            ) {
-                val toggleText = if (state.isPinned) {
-                    stringResource(Res.string.unpin_service)
-                } else {
-                    stringResource(Res.string.pin_service)
-                }
-
-                Text(text = toggleText)
-            }
-
-            if (state.isLoading) {
+        when (state) {
+            is ServiceDetailsState.Loading -> {
                 Box(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator()
                 }
-            } else {
-                LocationTimeline(
+            }
+
+            is ServiceDetailsState.Error -> {
+                Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(top = 12.dp),
-                    contentPadding = innerPadding,
-                    timelineRows = state.timelineRows,
-                    listState = timelineListState
-                )
+                        .padding(innerPadding),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Error loading service details: ${state.errorType}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
+
+            is ServiceDetailsState.Ready -> {
+                Column(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    RouteHeader(
+                        modifier = Modifier.padding(top = 16.dp),
+                        origin = state.origin,
+                        destination = state.destination,
+                        trainOperatingCompany = state.trainOperatingCompany
+                    )
+
+                    ToggleButton(
+                        modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp),
+                        checked = state.isPinned,
+                        onCheckedChange = { onPinStateToggled() }
+                    ) {
+                        val toggleText = if (state.isPinned) {
+                            stringResource(Res.string.unpin_service)
+                        } else {
+                            stringResource(Res.string.pin_service)
+                        }
+
+                        Text(text = toggleText)
+                    }
+
+                    LocationTimeline(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = 12.dp),
+                        contentPadding = innerPadding,
+                        timelineRows = state.timelineRows,
+                        listState = timelineListState
+                    )
+                }
             }
         }
     }
@@ -149,8 +174,7 @@ private fun ServiceDetailsScreenPreview() {
         toIndex = 1,
         closerTo = ServiceCurrentLocation.BetweenStations.CloserTo.TO
     )
-    val state = ServiceDetailsState(
-        isLoading = false,
+    val state = ServiceDetailsState.Ready(
         origin = "London Paddington",
         destination = "Taunton",
         currentLocation = currentLocation,
@@ -160,7 +184,9 @@ private fun ServiceDetailsScreenPreview() {
             targetStation = TrainStation(crs = "RDG", name = "Reading"),
             filterStation = null
         ),
-        trainOperatingCompany = "Great Western Railway"
+        trainOperatingCompany = "Great Western Railway",
+        targetStation = TrainStation(crs = "RDG", name = "Reading"),
+        scheduledArrivalTime = "11:20"
     )
 
     OnTrackTheme(themeMode = ThemeMode.SYSTEM) {

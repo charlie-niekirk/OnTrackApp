@@ -12,7 +12,7 @@ import me.cniekirk.ontrackapp.feature.servicedetails.ServiceDetailsViewModel
 @Serializable
 data class ServiceDetails(
     val serviceDetailRequest: ServiceDetailRequest,
-    val targetStation: TrainStation? = null,
+    val targetStation: TrainStation,
     val filterStation: TrainStation? = null
 ) : NavKey
 

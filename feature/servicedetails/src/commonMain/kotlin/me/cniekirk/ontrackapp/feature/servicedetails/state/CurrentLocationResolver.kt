@@ -1,5 +1,6 @@
 package me.cniekirk.ontrackapp.feature.servicedetails.state
 
+import co.touchlab.kermit.Logger
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import me.cniekirk.ontrackapp.core.domain.model.servicedetails.Location
@@ -16,6 +17,9 @@ internal object CurrentLocationResolver {
         if (locations.isEmpty()) return null
 
         val explicitServiceLocationIndex = locations.indexOfFirst { it.serviceLocation != null }
+
+        Logger.d("Resolving current location for ${locations.size} locations, explicit index: $explicitServiceLocationIndex")
+
         if (explicitServiceLocationIndex >= 0) {
             return when (locations[explicitServiceLocationIndex].serviceLocation) {
                 ServiceLocation.APPROACHING_STATION,
@@ -44,6 +48,9 @@ internal object CurrentLocationResolver {
         for (index in 0 until locations.lastIndex) {
             val current = locations[index]
             val next = locations[index + 1]
+
+            Logger.d("Checking location $index: ${current.departureTimeStatus} -> ${next.arrivalTimeStatus}")
+
             if (current.departureTimeStatus is TimeStatus.Departed &&
                 next.arrivalTimeStatus !is TimeStatus.Arrived
             ) {

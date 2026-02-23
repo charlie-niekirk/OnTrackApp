@@ -28,8 +28,8 @@ import org.orbitmvi.orbit.viewmodel.container
 @AssistedInject
 class ServiceDetailsViewModel(
     @Assisted private val serviceDetailsRequest: ServiceDetailRequest,
-    @Assisted("targetStation") private val targetStation: TrainStation?,
-    @Assisted("filterStation") private val filterStation: TrainStation?,
+    @Assisted private val targetStation: TrainStation,
+    @Assisted private val filterStation: TrainStation?,
     private val realtimeTrainsRepository: RealtimeTrainsRepository,
     private val pinnedServicesRepository: PinnedServicesRepository,
     private val pinServiceUseCase: PinServiceUseCase,
@@ -37,7 +37,7 @@ class ServiceDetailsViewModel(
 ) : ViewModel(), ContainerHost<ServiceDetailsState, ServiceDetailsEffect> {
 
     override val container = container<ServiceDetailsState, ServiceDetailsEffect>(
-        ServiceDetailsState(
+        ServiceDetailsState.Loading(
             targetStation = targetStation,
             filterStation = filterStation
         )
@@ -47,16 +47,32 @@ class ServiceDetailsViewModel(
     }
 
     fun togglePinState() = intent {
-        val pinResult = if (state.isPinned) {
-            unpinServiceUseCase(serviceDetailsRequest)
-        } else {
-            pinServiceUseCase(
-                origin = state.origin,
-                destination = state.destination,
-                trainOperatingCompany = state.trainOperatingCompany,
-                scheduledArrivalTime = state.scheduledArrivalTime,
-                serviceDetailRequest = serviceDetailsRequest
-            )
+        val currentState = state
+        val pinResult = when (currentState) {
+            is ServiceDetailsState.Loading,
+            is ServiceDetailsState.Error -> {
+                if (currentState.isPinned) {
+                    unpinServiceUseCase(serviceDetailsRequest)
+                } else {
+                    return@intent
+                }
+            }
+
+            is ServiceDetailsState.Ready -> {
+                if (currentState.isPinned) {
+                    unpinServiceUseCase(serviceDetailsRequest)
+                } else {
+                    pinServiceUseCase(
+                        origin = currentState.origin,
+                        destination = currentState.destination,
+                        targetStation = currentState.targetStation,
+                        filterStation = currentState.filterStation,
+                        trainOperatingCompany = currentState.trainOperatingCompany,
+                        scheduledArrivalTime = currentState.scheduledArrivalTime,
+                        serviceDetailRequest = serviceDetailsRequest
+                    )
+                }
+            }
         }
 
         pinResult.onFailure {
@@ -73,14 +89,22 @@ class ServiceDetailsViewModel(
                 .distinctUntilChanged()
                 .collect { isPinned ->
                     intent {
-                        reduce { state.copy(isPinned = isPinned) }
+                        reduce {
+                            state.withPinnedState(isPinned)
+                        }
                     }
                 }
         }
     }
 
     fun fetchServiceDetails() = intent {
-        reduce { state.copy(isLoading = true) }
+        reduce {
+            ServiceDetailsState.Loading(
+                targetStation = state.targetStation,
+                filterStation = state.filterStation,
+                isPinned = state.isPinned
+            )
+        }
 
         realtimeTrainsRepository.getServiceDetails(
             serviceDetailsRequest.serviceUid,
@@ -91,8 +115,10 @@ class ServiceDetailsViewModel(
             val currentLocation = CurrentLocationResolver.resolve(serviceDetails.locations)
 
             reduce {
-                state.copy(
-                    isLoading = false,
+                ServiceDetailsState.Ready(
+                    targetStation = state.targetStation,
+                    filterStation = state.filterStation,
+                    isPinned = state.isPinned,
                     origin = serviceDetails.origin,
                     destination = serviceDetails.destination,
                     currentLocation = currentLocation,
@@ -100,15 +126,30 @@ class ServiceDetailsViewModel(
                     timelineRows = TimelineRowStateMapper.map(
                         locations = serviceDetails.locations,
                         currentLocation = currentLocation,
-                        targetStation = targetStation,
-                        filterStation = filterStation
+                        targetStation = state.targetStation,
+                        filterStation = state.filterStation
                     ),
                     scheduledArrivalTime = serviceDetails.scheduledArrivalTime
                 )
             }
-        }.onFailure {
-            reduce { state.copy(isLoading = false) }
+        }.onFailure { throwable ->
+            reduce {
+                ServiceDetailsState.Error(
+                    targetStation = state.targetStation,
+                    filterStation = state.filterStation,
+                    isPinned = state.isPinned,
+                    errorType = throwable.message ?: "Unknown error"
+                )
+            }
             postSideEffect(ServiceDetailsEffect.DisplayError)
+        }
+    }
+
+    private fun ServiceDetailsState.withPinnedState(isPinned: Boolean): ServiceDetailsState {
+        return when (this) {
+            is ServiceDetailsState.Loading -> copy(isPinned = isPinned)
+            is ServiceDetailsState.Ready -> copy(isPinned = isPinned)
+            is ServiceDetailsState.Error -> copy(isPinned = isPinned)
         }
     }
 
@@ -118,8 +159,8 @@ class ServiceDetailsViewModel(
     interface Factory : ManualViewModelAssistedFactory {
         fun create(
             serviceDetailsRequest: ServiceDetailRequest,
-            @Assisted("targetStation") targetStation: TrainStation?,
-            @Assisted("filterStation") filterStation: TrainStation?
+            targetStation: TrainStation,
+            filterStation: TrainStation?
         ): ServiceDetailsViewModel
     }
 }

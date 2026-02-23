@@ -23,16 +23,26 @@ class StationSearchViewModel(
 
     private var stationList: List<Station> = emptyList()
 
-    override val container = container<StationSearchState, StationSearchEffect>(StationSearchState(stationType)) {
+    override val container = container<StationSearchState, StationSearchEffect>(
+        StationSearchState.Loading(stationType = stationType)
+    ) {
         fetchStations()
     }
 
     fun searchStations(query: String) = intent {
-        reduce { state.copy(searchQuery = query) }
-        val filtered = stationList.filter {
-            it.crs.contains(query, ignoreCase = true) || it.name.contains(query, ignoreCase = true)
+        val currentState = state as? StationSearchState.Ready ?: return@intent
+        val updatedState = currentState.copy(searchQuery = query)
+        reduce { updatedState }
+
+        val filteredStations = stationList.filter { station ->
+            station.crs.contains(query, ignoreCase = true) || station.name.contains(query, ignoreCase = true)
         }
-        reduce { state.copy(stations = filtered) }
+
+        reduce {
+            updatedState.copy(
+                stations = filteredStations
+            )
+        }
     }
 
     private fun fetchStations() = intent {
@@ -40,8 +50,8 @@ class StationSearchViewModel(
             .onSuccess { stations ->
                 stationList = stations
                 reduce {
-                    state.copy(
-                        isLoading = false,
+                    StationSearchState.Ready(
+                        stationType = state.stationType,
                         stations = stations
                     )
                 }
@@ -49,7 +59,10 @@ class StationSearchViewModel(
             .onFailure { throwable ->
                 Logger.e("Error: ${throwable.message}")
                 reduce {
-                    state.copy(isLoading = false)
+                    StationSearchState.Error(
+                        stationType = state.stationType,
+                        errorType = throwable.message ?: "Unknown error"
+                    )
                 }
             }
     }

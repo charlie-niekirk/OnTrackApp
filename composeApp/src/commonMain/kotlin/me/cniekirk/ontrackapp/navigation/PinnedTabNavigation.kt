@@ -39,8 +39,14 @@ fun PinnedTabNavigation(modifier: Modifier = Modifier) {
         backStack = backStack,
         onBack = { backStack.removeLastOrNull() },
         entryProvider = entryProvider {
-            pinned { serviceDetailRequest ->
-                backStack.add(ServiceDetails(serviceDetailRequest))
+            pinned { pinnedService ->
+                backStack.add(
+                    ServiceDetails(
+                        serviceDetailRequest = pinnedService.serviceDetailRequest,
+                        targetStation = pinnedService.targetStation,
+                        filterStation = pinnedService.filterStation
+                    )
+                )
             }
             serviceDetails()
         }
