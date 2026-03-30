@@ -1,6 +1,7 @@
 package me.cniekirk.ontrackapp.feature.stationsearch
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
@@ -12,9 +13,14 @@ import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import me.cniekirk.ontrackapp.core.common.model.StationType
 import me.cniekirk.ontrackapp.core.domain.model.Station
 import me.cniekirk.ontrackapp.core.domain.repository.StationsRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
 
+@OptIn(FlowPreview::class)
 @AssistedInject
 class StationSearchViewModel(
     private val stationsRepository: StationsRepository,
@@ -22,13 +28,23 @@ class StationSearchViewModel(
 ) : ViewModel(), ContainerHost<StationSearchState, StationSearchEffect> {
 
     private var stationList: List<Station> = emptyList()
+    private val searchQueryFlow = MutableStateFlow("")
 
     override val container = container<StationSearchState, StationSearchEffect>(StationSearchState(stationType)) {
+        viewModelScope.launch {
+            searchQueryFlow.debounce(300).collect { query ->
+                filterStations(query)
+            }
+        }
         fetchStations()
     }
 
     fun searchStations(query: String) = intent {
         reduce { state.copy(searchQuery = query) }
+        searchQueryFlow.value = query
+    }
+
+    private fun filterStations(query: String) = intent {
         val filtered = stationList.filter {
             it.crs.contains(query, ignoreCase = true) || it.name.contains(query, ignoreCase = true)
         }
